@@ -53,7 +53,7 @@ namespace GameLogic
         {
             camera = GetComponent<Camera>();
             camera.enabled = false;
-            _projMat = GetComponent<MeshRenderer>().sharedMaterials[0];
+            _projMat = Application.isPlaying ? GetComponent<MeshRenderer>().materials[0] : GetComponent<MeshRenderer>().sharedMaterials[0];
             if (AllocateRTIfNeeded())
             {
                 CreateDepthRT_Runtime().Forget();

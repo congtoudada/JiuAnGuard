@@ -13,3 +13,4 @@ Tools/FileServer/AssetRoot
 
 JiuAnProject/ProjectSettings/CommonBurstAotSettings.json
 JiuAnProject/ProjectSettings/BurstAotSettings_StandaloneWindows.json
+Designer/*

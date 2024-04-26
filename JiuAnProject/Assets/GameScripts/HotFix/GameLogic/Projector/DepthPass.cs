@@ -14,6 +14,11 @@ namespace GameLogic
             volume = VolumeManager.instance.stack.GetComponent<DepthVolume>();
         }
 
+        public override CustomVolumeBase OnTryGetVolume()
+        {
+            return VolumeManager.instance.stack.GetComponent<DepthVolume>();
+        }
+
         protected override void OnRender(CommandBuffer cmd, ref RenderingData renderingData)
         {
             Blitter.BlitCameraTexture(cmd, m_CameraColorHandle, m_CameraColorHandle, m_Material, 0);

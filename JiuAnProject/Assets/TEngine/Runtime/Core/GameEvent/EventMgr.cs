@@ -13,7 +13,7 @@ namespace TEngine
         private class EventEntryData
         {
             public object InterfaceWrap;
-        };
+        }
         
         /// <summary>
         /// 总事件实体数据。

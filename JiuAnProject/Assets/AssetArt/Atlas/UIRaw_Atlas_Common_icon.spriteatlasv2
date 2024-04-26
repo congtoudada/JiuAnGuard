@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!612988286 &1
+SpriteAtlasAsset:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UIRaw_Atlas_Common_icon
+  serializedVersion: 2
+  m_MasterAtlas: {fileID: 0}
+  m_ImporterData:
+    packables:
+    - {fileID: 21300000, guid: 4b3a41a3502a2c045b813778f57776ea, type: 3}
+    - {fileID: 21300000, guid: b96015d01fc535d4991117f3e2e70c98, type: 3}
+    - {fileID: 21300000, guid: 0604864c97382df4f890f8f8e7525548, type: 3}
+    - {fileID: 21300000, guid: 05c189a7a921ff24c9495d81d4ba6120, type: 3}
+    - {fileID: 21300000, guid: b73a6aafdc9f95c49b79062fb5522a87, type: 3}
+    - {fileID: 21300000, guid: 605133dabfe2fc24095cd511554f2edf, type: 3}
+    - {fileID: 21300000, guid: eb4fad0c38750184484cc9fc0480aa3c, type: 3}
+    - {fileID: 21300000, guid: 822fd379434e9d2448f09eab10cf17af, type: 3}
+    - {fileID: 21300000, guid: 70e1db20e9286b94092cddb64ffec146, type: 3}
+  m_IsVariant: 0

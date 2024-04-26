@@ -34,7 +34,7 @@ namespace GameMain
             public CustomPostProcessPassBase PostProcessPassBase;
         }
         public List<Settings> settings = new List<Settings>();//开放设置
-
+        
         /// <summary>
         /// 当RenderFeature参数面板修改时调用，利用类名 + 反射实例化RenderPass
         /// </summary>

@@ -68,7 +68,7 @@ namespace TEngine
         public bool FromResources { private set; get; }
         
         /// <summary>
-        /// 隐藏窗口关闭时间。
+        /// 隐藏窗口延迟
         /// </summary>
         public int HideTimeToClose { get; set; }
         

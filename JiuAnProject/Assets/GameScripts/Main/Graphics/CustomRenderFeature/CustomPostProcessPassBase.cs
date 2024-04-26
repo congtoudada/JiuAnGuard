@@ -92,8 +92,12 @@ namespace GameMain
             }
             if (volume == null)
             {
-                Debug.LogWarning("没有找到CustomBase！！！");
-                return;
+                volume = OnTryGetVolume();
+                if (volume == null)
+                {
+                    Debug.LogWarning("没有找到CustomBase！！！");
+                    return;
+                }
             }
             if (!volume.IsActive()) return;
             
@@ -120,6 +124,11 @@ namespace GameMain
         {
             m_CameraColorHandle = colorHandle;
             m_CameraDepthHandle = depthHandle;
+        }
+
+        public virtual CustomVolumeBase OnTryGetVolume()
+        {
+            return null;
         }
         
         /// <summary>
