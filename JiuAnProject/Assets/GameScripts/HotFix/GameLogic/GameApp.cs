@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using GameBase;
+using GameLogic;
 using TEngine;
 
 /// <summary>
@@ -37,7 +38,11 @@ public partial class GameApp:Singleton<GameApp>
     /// </summary>
     private void StartGameLogic()
     {
-
+        GameModule.Scene.LoadScene("MainScene", callBack: handle =>
+        {
+            Log.Info("加载场景MainScene");
+            GameModule.UI.ShowUI<UIMainWindow>();
+        });
     }
 
     /// <summary>

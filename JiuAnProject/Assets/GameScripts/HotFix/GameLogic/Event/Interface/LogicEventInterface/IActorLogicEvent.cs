@@ -21,18 +21,6 @@ namespace GameLogic
     [EventInterface(EEventGroup.GroupLogic)]
     interface IActorLogicEvent
     {
-        void OnMainPlayerDataChange();
-        
-        void OnMainPlayerLevelChange();
 
-        void OnMainPlayerGoldChange(uint oldVal, uint newVal);
-
-        void OnMainPlayerDiamondChange(uint oldVal, uint newVal);
-        
-        void OnMainPlayerBindDiamondChange(uint oldVal, uint newVal);
-        
-        void OnMainPlayerCurrencyChange(CurrencyType type, uint oldVal, uint newVal);
-        
-        void OnMainPlayerExpChange(ulong oldVal, ulong newVal);
     }
 }

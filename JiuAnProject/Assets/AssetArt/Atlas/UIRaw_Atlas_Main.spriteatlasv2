@@ -14,7 +14,9 @@ SpriteAtlasAsset:
     - {fileID: 21300000, guid: a69e56cc86e5f144d81afde41b698d22, type: 3}
     - {fileID: 21300000, guid: 7d3f54016cab5f94a94b37eb92467611, type: 3}
     - {fileID: 21300000, guid: 6938ff39ba93af7469a43c61f2e473f6, type: 3}
+    - {fileID: 21300000, guid: ef62ad52a74de2f41a5b39bb67f64fb4, type: 3}
     - {fileID: 21300000, guid: 71d9d652ad11dc443ae940bdfabf3a67, type: 3}
+    - {fileID: 21300000, guid: 8e328d2ed1e8ab842965afa5060fc7e9, type: 3}
     - {fileID: 21300000, guid: fad05fd80f5fe1445a51e93c135ae66b, type: 3}
     - {fileID: 21300000, guid: 38e2f2fcfbb14264bba3ff106ade15f8, type: 3}
     - {fileID: 21300000, guid: 100d04aa323d98941b5fd280df26e828, type: 3}
