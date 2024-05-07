@@ -241,6 +241,7 @@ namespace TEngine
         internal void TryInvoke(System.Action<UIWindow> prepareCallback, System.Object[] userDatas)
         {
             base.userDatas = userDatas;
+            CancelHideToCloseTimer();
             if (IsPrepare)
             {
                 prepareCallback?.Invoke(this);
@@ -249,7 +250,7 @@ namespace TEngine
             {
                 _prepareCallback = prepareCallback;
             }
-            CancelHideToCloseTimer();
+            // CancelHideToCloseTimer();
         }
 
         internal async UniTaskVoid InternalLoad(string location, Action<UIWindow> prepareCallback, bool isAsync, System.Object[] userDatas)

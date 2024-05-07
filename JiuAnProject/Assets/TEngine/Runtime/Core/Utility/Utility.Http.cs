@@ -77,6 +77,15 @@ namespace TEngine
                 return await SendWebRequest(unityWebRequest, cts);
             }
 
+            public static async UniTask<Texture> GetTexture(string url, float timeout = 10f)
+            {
+                var cts = new CancellationTokenSource();
+                cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
+
+                using UnityWebRequest unityWebRequest = UnityWebRequestTexture.GetTexture(url);
+                return await SendWebRequestTexture(unityWebRequest, cts);
+            }
+
             /// <summary>
             /// 抛出网络请求。
             /// </summary>
@@ -87,7 +96,8 @@ namespace TEngine
             {
                 try
                 {
-                    var (isCanceled, _) = await unityWebRequest.SendWebRequest().WithCancellation(cts.Token).SuppressCancellationThrow();
+                    var (isCanceled, _) = await unityWebRequest.SendWebRequest().WithCancellation(cts.Token)
+                        .SuppressCancellationThrow();
                     if (isCanceled)
                     {
                         Log.Warning($"HttpPost {unityWebRequest.url} be canceled!");
@@ -104,8 +114,53 @@ namespace TEngine
                         return string.Empty;
                     }
                 }
+                catch (Exception e)
+                {
+                    Log.Warning("HttpPost Error: " + e.ToString());
+                    unityWebRequest.Dispose();
+                    return string.Empty;
+                }
 
                 string ret = unityWebRequest.downloadHandler.text;
+                unityWebRequest.Dispose();
+                return ret;
+            }
+            
+            /// <summary>
+            /// 抛出网络请求。
+            /// </summary>
+            /// <param name="unityWebRequest">UnityWebRequest。</param>
+            /// <param name="cts">CancellationTokenSource。</param>
+            /// <returns>请求结果。</returns>
+            public static async UniTask<Texture> SendWebRequestTexture(UnityWebRequest unityWebRequest, CancellationTokenSource cts)
+            {
+                try
+                {
+                    var (isCanceled, _) = await unityWebRequest.SendWebRequest().WithCancellation(cts.Token).SuppressCancellationThrow();
+                    if (isCanceled)
+                    {
+                        Log.Warning($"HttpPost {unityWebRequest.url} be canceled!");
+                        unityWebRequest.Dispose();
+                        return null;
+                    }
+                }
+                catch (OperationCanceledException ex)
+                {
+                    if (ex.CancellationToken == cts.Token)
+                    {
+                        Log.Warning("HttpPost Timeout");
+                        unityWebRequest.Dispose();
+                        return null;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.Warning("HttpPost Error: " + e.ToString());
+                    unityWebRequest.Dispose();
+                    return null;
+                }
+
+                Texture ret = ((DownloadHandlerTexture)unityWebRequest.downloadHandler).texture;
                 unityWebRequest.Dispose();
                 return ret;
             }

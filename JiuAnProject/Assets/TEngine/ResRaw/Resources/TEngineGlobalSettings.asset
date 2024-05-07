@@ -61,7 +61,7 @@ MonoBehaviour:
     - uiElementRegex: m_scrollRect
       componentName: ScrollRect
     - uiElementRegex: m_input
-      componentName: InputField
+      componentName: TMP_InputField
     - uiElementRegex: m_grid
       componentName: GridLayoutGroup
     - uiElementRegex: m_hlay
@@ -78,6 +78,10 @@ MonoBehaviour:
       componentName: AnimationCurve
     - uiElementRegex: m_canvasGroup
       componentName: CanvasGroup
+    - uiElementRegex: m_dp
+      componentName: TMP_Dropdown
+    - uiElementRegex: m_toggle
+      componentName: Toggle
   m_BybridCLRCustomGlobalSettings:
     HotUpdateAssemblies:
     - GameBase.dll

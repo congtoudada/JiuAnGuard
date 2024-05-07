@@ -856,7 +856,9 @@ namespace E2C.ChartBuilder
         void UpdatePointerLinear(Vector2 mousePosition)
         {
             float min = float.MaxValue;
-            currTracking = trackingList[Mathf.RoundToInt(mousePosition.x)];
+            int idx = Mathf.RoundToInt(mousePosition.x);
+            if (idx < 0 || idx >= trackingList.Count) return;
+            currTracking = trackingList[idx];
             for (int i = 0; i < dataInfo.seriesCount; ++i)
             {
                 if (dataInfo.activeDataCount[i] == 0) continue;

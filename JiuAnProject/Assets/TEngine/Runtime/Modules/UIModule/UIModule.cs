@@ -424,6 +424,7 @@ namespace TEngine
             for (int i = _stack.Count - 1; i >= 0; i--)
             {
                 UIWindow window = _stack[i];
+                if (window.HideTimerId != 0) continue;
                 if (isHideNext == false)
                 {
                     window.Visible = true;

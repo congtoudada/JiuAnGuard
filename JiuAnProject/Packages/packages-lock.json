@@ -20,6 +20,13 @@
       "source": "embedded",
       "dependencies": {}
     },
+    "com.monitor1394.xcharts": {
+      "version": "https://github.com/XCharts-Team/XCharts.git#3.0",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "78a07aa2ae165f3faf011c464212f78f1271f301"
+    },
     "com.tuyoogame.yooasset": {
       "version": "file:YooAsset",
       "depth": 0,

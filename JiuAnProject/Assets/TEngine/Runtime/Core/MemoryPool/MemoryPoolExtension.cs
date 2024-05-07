@@ -17,12 +17,12 @@ namespace TEngine
         /// <summary>
         /// 从内存池中初始化。
         /// </summary>
-        public abstract void InitFromPool();
+        public virtual void InitFromPool(){}
 
         /// <summary>
         /// 回收到内存池。
         /// </summary>
-        public abstract void RecycleToPool();
+        public virtual void RecycleToPool(){}
     }
 
     public static partial class MemoryPool

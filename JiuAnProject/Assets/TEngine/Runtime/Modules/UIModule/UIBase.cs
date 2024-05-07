@@ -108,14 +108,14 @@ namespace TEngine
         }
 
         /// <summary>
-        /// 窗口创建。
+        /// 窗口创建。（创建时调用一次）
         /// </summary>
         protected virtual void OnCreate()
         {
         }
 
         /// <summary>
-        /// 窗口刷新
+        /// 窗口刷新（每次show的时候调用）
         /// </summary>
         protected virtual void OnRefresh()
         {
