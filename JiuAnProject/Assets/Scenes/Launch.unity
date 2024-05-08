@@ -526,7 +526,7 @@ MonoBehaviour:
   m_VersionHelperTypeName: TEngine.DefaultVersionHelper
   m_LogHelperTypeName: TEngine.DefaultLogHelper
   m_JsonHelperTypeName: TEngine.DefaultJsonHelper
-  m_FrameRate: 120
+  m_FrameRate: 60
   m_GameSpeed: 1
   m_RunInBackground: 1
   m_NeverSleep: 1
