@@ -7,6 +7,8 @@
 *****************************************************/
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 using TEngine;
 using UnityEngine;
 
@@ -17,19 +19,15 @@ namespace GameLogic
 	{
 		protected override void OnCreate()
 		{
+			OnToggleWanderChange(true);
 			Log.Info("UIMainWindow OnCreate");
+			CreateWidget<RuntimeWarnWidget>("Right/RuntimeWarnWidget");
 		}
 
 		protected override void OnRefresh()
 		{
 			Log.Info("UIMainWindow OnRefresh");
-			// var userData = new UITipWindow.UITipData();
-			// userData.title = "你好";
-			// // userData.main_text = "Hello World";
-			// userData.img_url =
-			// 	"file://E:\\Practice\\Unity\\Demo\\DUT\\JiuAnGuard\\JiuAnProject\\Assets\\AssetRaw\\Texture\\Snipaste_2024-04-17_22-56-45.png";
-			// userData.sub_text = "入门";
-			// GameModule.UI.ShowUI<UITipWindow>(userData);
+			UIGlobalDataInstance.Instance.SendCameraInfoReq().Forget();
 		}
 
 		protected override void OnSetVisible(bool visible)

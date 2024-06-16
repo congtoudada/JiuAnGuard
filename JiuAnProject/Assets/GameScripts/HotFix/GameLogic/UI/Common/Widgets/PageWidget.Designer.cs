@@ -122,6 +122,7 @@ namespace GameLogic
 				confirmCallback: () =>
 				{
 					if (allSelectDelEvent != null) allSelectDelEvent();
+					UISimpleTipWindow.Show("删除成功！");
 					GameModule.UI.HideUI<UITipWindow>();
 				});
 		}

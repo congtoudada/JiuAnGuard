@@ -107,5 +107,13 @@ namespace GameLogic
 			if (idx < 0 || idx >= _switchBtnList.Count) return -1;
 			return Convert.ToInt32(_switchBtnList[idx].transform.FindChildComponent<TextMeshProUGUI>("Text (TMP)").text);
 		}
+
+		protected override void OnDestroy()
+		{
+			turnPageEvent = null;
+			allSelectEvent = null;
+			allCancelEvent = null;
+			allSelectDelEvent = null;
+		}
 	}
 }

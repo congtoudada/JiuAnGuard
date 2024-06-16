@@ -62,7 +62,7 @@ namespace GameLogic
             }
         }
 
-        public static void Show(string content, float duration = 1.5f)
+        public static void Show(string content, float duration = 2.5f)
         {
             var data = MemoryPool.Alloc<UISimpleTipData>();
             data.MainText = content;

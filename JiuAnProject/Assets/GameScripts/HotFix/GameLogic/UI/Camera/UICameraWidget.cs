@@ -10,25 +10,29 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using TEngine;
+using TMPro;
 using UnityEngine.Video;
 
 namespace GameLogic
 {
     public class UICameraWidget : UIWidget
     {
+        // private VideoPlayer _videoPlayer;
+        private VLCPlayerExample _VLCPlayer;
+        
         #region 脚本工具生成的代码
         private RawImage m_rimgVideoRT;
-        private VideoPlayer _videoPlayer;
         private Button m_btnPlay;
-        private ScrollRect m_scrollRectCamInfo;
+        private TextMeshProUGUI m_textCamType;
+        private TextMeshProUGUI m_textCamIp;
         private Button m_btnMove;
         private Button m_btnCloudControl;
         protected override void ScriptGenerator()
         {
             m_rimgVideoRT = FindChildComponent<RawImage>("LeftGroup/Video/Show/m_rimgVideoRT");
-            _videoPlayer = m_rimgVideoRT.GetComponent<VideoPlayer>();
             m_btnPlay = FindChildComponent<Button>("LeftGroup/Video/ToolMenu/m_btnPlay");
-            m_scrollRectCamInfo = FindChildComponent<ScrollRect>("LeftGroup/m_scrollRectCamInfo");
+            m_textCamType = FindChildComponent<TextMeshProUGUI>("LeftGroup/m_textCamType");
+            m_textCamIp = FindChildComponent<TextMeshProUGUI>("LeftGroup/m_textCamIp");
             m_btnMove = FindChildComponent<Button>("RightGroup/InteractGroup/VerticalGroup/m_btnMove");
             m_btnCloudControl = FindChildComponent<Button>("RightGroup/InteractGroup/VerticalGroup/m_btnCloudControl");
             m_btnPlay.onClick.AddListener(UniTask.UnityAction(OnClickPlayBtn));
@@ -37,17 +41,26 @@ namespace GameLogic
         }
         #endregion
 
+        protected override void BindMemberProperty()
+        {
+            // _videoPlayer = m_rimgVideoRT.GetComponent<VideoPlayer>();
+            _VLCPlayer = m_rimgVideoRT.GetComponent<VLCPlayerExample>();
+        }
+
         #region 事件
         private async UniTaskVoid OnClickPlayBtn()
         {
-            if (!_videoPlayer.isPlaying)
+            Log.Debug("UICameraWidget IsPlaying: " + _VLCPlayer.IsPlaying);
+            if (!_VLCPlayer.IsPlaying)
             {
-                _videoPlayer.Play();
+                Log.Debug("UICameraWidget Play: " + _VLCPlayer.path);
+                _VLCPlayer.Play();
                 m_btnPlay.GetComponent<Image>().SetSprite("camera_pause_btn2");
             }
             else
             {
-                _videoPlayer.Pause();
+                Log.Debug("UICameraWidget Pause: " + _VLCPlayer.path);
+                _VLCPlayer.Pause();
                 m_btnPlay.GetComponent<Image>().SetSprite("camera_play_btn2");
             }
         }
@@ -61,5 +74,18 @@ namespace GameLogic
         }
         #endregion
 
+        public void Refresh(RspCameraInfoDTO info)
+        {
+            Log.Debug("刷新UICameraWidget: " + info.streamUrl);
+            _VLCPlayer.Open(info.streamUrl);
+            m_textCamType.text = "型号：" + info.cameraType;
+            m_textCamIp.text = "IP：" + info.address;
+            m_btnPlay.GetComponent<Image>().SetSprite("camera_pause_btn2");
+        }
+
+        protected override void OnDestroy()
+        {
+            _VLCPlayer.Stop();
+        }
     }
 }

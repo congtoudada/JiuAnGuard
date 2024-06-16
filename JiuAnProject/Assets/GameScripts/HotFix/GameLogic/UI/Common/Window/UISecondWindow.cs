@@ -6,6 +6,8 @@
   功能：任务：1.初始化顶部菜单栏 2.初始化大标题 3.创建专属控件
 *****************************************************/
 
+using System;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using TEngine;
 using TMPro;
@@ -16,9 +18,9 @@ namespace GameLogic
 {
     public abstract class UISecondWindow : UIWindow
     {
-
         protected const string TOGGLE_ITEM = "ToogleItem";
-        
+        protected virtual List<string> pageNames { get; }
+        protected virtual string title { get; }
         #region 脚本工具生成的代码
         protected ScrollRect m_scrollRectTopToggleGroup;
         protected TextMeshProUGUI m_textTitle;
@@ -40,5 +42,41 @@ namespace GameLogic
             GameModule.UI.HideUI(this.GetType());
         }
         #endregion
+
+
+        protected override void OnCreate()
+        {
+            //标题
+            m_textTitle.text = title;
+            //菜单栏
+            if (pageNames != null)
+            {
+                Toggle firstToggle = null;
+                m_scrollRectTopToggleGroup.Clear();
+                for (int i = 0; i < pageNames.Count; i++)
+                {
+                    var pageToggle = m_scrollRectTopToggleGroup.Add(TOGGLE_ITEM).GetComponent<Toggle>();
+                    pageToggle.group = m_scrollRectTopToggleGroup.content.GetComponent<ToggleGroup>();
+                    pageToggle.transform.Find("Text (TMP)").GetComponent<TextMeshProUGUI>().text = pageNames[i];
+                    var i1 = i;
+                    pageToggle.onValueChanged.AddListener(isOn =>
+                    {
+                        if (isOn)
+                        {
+                            ListChild[i1].Visible = true;
+                        }
+                        else
+                        {
+                            ListChild[i1].Visible = false;
+                        }
+                    });
+                    if (i == 0)
+                    {
+                        firstToggle = pageToggle;
+                    }
+                }
+                if (firstToggle != null) firstToggle.isOn = true;
+            }
+        }
     }
 }

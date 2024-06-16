@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
@@ -181,7 +182,7 @@ namespace TEngine
 
                     // 交互设置
                     Interactable = value;
-
+                    
                     // 虚函数
                     if (_isCreate)
                     {

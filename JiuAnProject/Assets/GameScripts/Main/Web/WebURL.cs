@@ -17,7 +17,9 @@ namespace GameLogic
 {
     public static class WebURL
     {
-        public const string BASE_URL = "http://127.0.0.1:9012/unity/";
+        // public const string BASE_URL = "http://127.0.0.1:9012/unity/";
+        public const string BASE_URL = "http://localhost:8080/unity/";
+        // public const string BASE_URL = "http://210.30.97.235:8080/unity/";
 
         public static string GetFullURL(string url)
         {

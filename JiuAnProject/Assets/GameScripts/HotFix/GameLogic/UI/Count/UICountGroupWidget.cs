@@ -7,6 +7,8 @@
 *****************************************************/
 
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using TEngine;
 
@@ -15,37 +17,58 @@ namespace GameLogic
     /// <summary>
     /// 统计组
     /// </summary>
-    public class UICountGroupWidget : UIWidget
+    public partial class UICountGroupWidget : UIWidget
     {
-        public const string KEY_CURRENT_GROUP_ID = nameof(KEY_CURRENT_GROUP_ID);
-        public const string KEY_GROUP_DICT = nameof(KEY_GROUP_DICT);
-        //统计组1表示默认所有
-        public int CurrentGroupID = 1;
-        //key: groupID value: camera_id list
-        public Dictionary<int, List<int>> GroupDict = new Dictionary<int, List<int>>();
-
+        private List<GroupItemWidget> curWidgets = new List<GroupItemWidget>();
+        private List<GroupItemWidget> noneWidgets = new List<GroupItemWidget>();
+        
         protected override void OnCreate()
         {
-            //从本地读取统计组配置
-            CurrentGroupID = GameModule.Setting.GetInt(KEY_CURRENT_GROUP_ID, 1);
-            string json = GameModule.Setting.GetString(KEY_GROUP_DICT, "");
-            if (json != "")
+            RefeshTitle();
+        }
+
+        private void RefeshTitle()
+        {
+            m_dpGroups.ClearOptions();
+            List<string> groups = new List<string>()
             {
-                GroupDict = JsonConvert.DeserializeObject<Dictionary<int, List<int>>>(json);
+                //确保默认统计组始终处于第一个位置
+                UIGlobalDataInstance.DEFAULT_GROUP_ID
+            };
+            List<string> keys = UIGlobalDataInstance.Instance.GroupDict.Keys
+                .Where(key => key != UIGlobalDataInstance.DEFAULT_GROUP_ID).ToList();
+            groups.AddRange(keys);
+            m_dpGroups.AddOptions(groups);
+            m_dpGroups.value = groups.FindIndex(key => key == UIGlobalDataInstance.Instance.CurrentGroupID);
+            //修改不同统计组
+            m_dpGroups.onValueChanged.AddListener(val =>
+            {
+                UIGlobalDataInstance.Instance.CurrentGroupID = m_dpGroups.options[val].text;
+                RefreshContent();
+            });
+            m_dpGroups.onValueChanged.Invoke(m_dpGroups.value); //手动触发
+        }
+        
+        private void RefreshContent()
+        {
+            m_scrollRectLeft.Clear();
+            m_scrollRectRight.Clear();
+            curWidgets.Clear();
+            noneWidgets.Clear();
+            List<RspCameraInfoDTO> curList = UIGlobalDataInstance.Instance.GetCurrentGroups();
+            List<RspCameraInfoDTO> noneList = UIGlobalDataInstance.Instance.GetNoneCurrentGroups();
+            foreach (var item in curList)
+            {
+                var widget = CreateWidgetByPath<GroupItemWidget>(m_scrollRectRight.content, "GroupItemWidget");
+                widget.Refresh(item);
+                curWidgets.Add(widget);
             }
-        }
-
-        public (int, Dictionary<int, List<int>>) GetInfo()
-        {
-            return (CurrentGroupID, GroupDict);
-        }
-
-        public void SaveInfo()
-        {
-            GameModule.Setting.SetInt(KEY_CURRENT_GROUP_ID, CurrentGroupID);
-            string json = JsonConvert.SerializeObject(GroupDict);
-            GameModule.Setting.SetString(KEY_GROUP_DICT, json);
-            GameModule.Setting.Save();
+            foreach (var item in noneList)
+            {
+                var widget = CreateWidgetByPath<GroupItemWidget>(m_scrollRectLeft.content, "GroupItemWidget");
+                widget.Refresh(item);
+                noneWidgets.Add(widget);
+            }
         }
     }
 }

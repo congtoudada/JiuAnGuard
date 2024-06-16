@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using GameMain;
@@ -6,7 +7,10 @@ using UnityEngine.Rendering;
 
 namespace GameLogic
 {
-    [System.Serializable, VolumeComponentMenu("Custom/Depth")]
+#if UNITY_EDITOR
+    [VolumeComponentMenu("Custom/Depth")]
+#endif
+    [Serializable]
     public class DepthVolume : CustomVolumeBase
     {
         public BoolParameter isOn = new BoolParameter(true);

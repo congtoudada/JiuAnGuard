@@ -10,7 +10,9 @@ GenerateDatas/
 
 #FileServer
 Tools/FileServer/AssetRoot
+Tools/FileServer/Default_0/*
 
 JiuAnProject/ProjectSettings/CommonBurstAotSettings.json
 JiuAnProject/ProjectSettings/BurstAotSettings_StandaloneWindows.json
 Designer/*
+BuildProject/*

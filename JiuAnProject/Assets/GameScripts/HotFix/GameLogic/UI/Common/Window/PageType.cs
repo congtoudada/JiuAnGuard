@@ -8,9 +8,9 @@
 
 namespace GameLogic
 {
-    public enum PageType : int
+    public enum PageType
     {
-        Count = 0,
+        Count = 1,
         Face,
         Warn
     }

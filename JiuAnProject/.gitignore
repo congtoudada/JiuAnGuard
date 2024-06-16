@@ -96,3 +96,6 @@ yoo/
 
 [Aa]ssets/AssetRaw/*
 [Aa]ssets/Temp/*
+[Aa]ssets/Plugins/VLCUnity/*
+
+package/*

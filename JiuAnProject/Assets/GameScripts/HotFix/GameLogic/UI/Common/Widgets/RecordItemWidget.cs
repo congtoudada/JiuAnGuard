@@ -16,14 +16,27 @@ using TMPro;
 
 namespace GameLogic
 {
-	class RecordItemWidget : UIWidget
+	public class RecordItemWidget : UIWidget
 	{
+		public enum RenderTypeEnum
+		{
+			Red = 0,
+			Green
+		}
+		
 		private long key;
 		private string recordTime;
 		private string name;
 		private string pos;
 		private string status;
 		private string img_url;
+		private RenderTypeEnum renderType; //0:红 1:绿
+
+		public RenderTypeEnum RenderType
+		{
+			get => renderType;
+			set => renderType = value;
+		}
 
 		public string ImgURL
 		{
@@ -111,9 +124,11 @@ namespace GameLogic
 				confirmCallback: async () =>
 				{
 					WWWForm form = new WWWForm();
-					form.AddField("pageType", (int) this.mgr.PageType);
-					form.AddField("id", Key.ToString());
-					string ret = await Utility.Http.Post(WebURL.GetFullURL("del_record"), form);
+					ReqDelRecordDTO dto = new ReqDelRecordDTO();
+					dto.key = Key;
+					dto.pageType = (int) mgr.PageType;
+					form.AddField("DTO", JsonConvert.SerializeObject(dto));
+					string ret = await Utility.Http.Post(WebURL.GetFullURL("record_delete"), form);
 					bool result = JsonConvert.DeserializeObject<bool>(ret);
 					if (result)
 					{
@@ -132,10 +147,12 @@ namespace GameLogic
 		public void Update(RecordItemWidget item)
 		{
 			if (item != this)
-				Update(item.mgr, item.Key, item.RecordTime, item.Name, item.Pos, item.Status, item.ImgURL);
+				Update(item.mgr, item.Key, item.RecordTime, item.Name, item.Pos, 
+					item.Status, item.ImgURL, item.renderType);
 		}
 		
-		public void Update(RecordItemWidgetMgr mgr, long key, string recordTime, string name, string pos, string status, string img_url)
+		public void Update(RecordItemWidgetMgr mgr, long key, string recordTime, string name, 
+			string pos, string status, string img_url, RenderTypeEnum renderType)
 		{
 			this.mgr = mgr;
 			Key = key;
@@ -144,6 +161,7 @@ namespace GameLogic
 			Pos = pos;
 			Status = status;
 			ImgURL = img_url;
+			RenderType = renderType;
 			Refresh();
 		}
 
@@ -162,6 +180,15 @@ namespace GameLogic
 			m_textPos.text = pos;
 			m_textStatus.text = status;
 			m_toggleSelect.isOn = false;
+			switch (renderType)
+			{
+				case RenderTypeEnum.Red:
+					transform.GetComponent<Image>().SetSprite("main_right_recordItem");
+					break;
+				case RenderTypeEnum.Green:
+					transform.GetComponent<Image>().SetSprite("main_right_recordItem2");
+					break;
+			}
 		}
 
 		private string GetTitleString(PageType pageType)

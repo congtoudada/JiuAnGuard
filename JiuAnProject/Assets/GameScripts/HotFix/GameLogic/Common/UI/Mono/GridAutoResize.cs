@@ -7,7 +7,9 @@ using UnityEngine.UI;
 
 namespace GameLogic
 {
+#if UNITY_EDITOR
     [ExecuteInEditMode]
+#endif
     public class GridAutoResize : MonoBehaviour
     {
         private int old_screen_width;
@@ -52,6 +54,7 @@ namespace GameLogic
 
         private float GetGameViewWidth()
         {
+#if UNITY_EDITOR
             var mouseOverWindow = UnityEditor.EditorWindow.mouseOverWindow;
             System.Reflection.Assembly assembly = typeof(UnityEditor.EditorWindow).Assembly;
             System.Type type = assembly.GetType("UnityEditor.PlayModeView");
@@ -61,8 +64,10 @@ namespace GameLogic
                 System.Reflection.BindingFlags.NonPublic |
                 System.Reflection.BindingFlags.Static
             ).Invoke(mouseOverWindow, null);
-
             return size.x;
+#else
+            return 1920f;
+#endif
         }
 
     }

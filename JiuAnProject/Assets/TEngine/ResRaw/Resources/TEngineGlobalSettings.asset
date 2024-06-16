@@ -20,7 +20,7 @@ MonoBehaviour:
     m_ResourcesArea:
       m_ResAdminType: Default
       m_ResAdminCode: 0
-      m_ServerType: 1
+      m_ServerType: 0
       m_CleanCommitPathRes: 1
       m_InnerResourceSourceUrl: http://127.0.0.1:8081
       m_ExtraResourceSourceUrl: http://127.0.0.1:8081
@@ -85,8 +85,8 @@ MonoBehaviour:
   m_BybridCLRCustomGlobalSettings:
     HotUpdateAssemblies:
     - GameBase.dll
-    - GameProto.dll
     - GameLogic.dll
+    - GameProto.dll
     AOTMetaAssemblies:
     - mscorlib.dll
     - System.dll
@@ -95,6 +95,8 @@ MonoBehaviour:
     - YooAsset.dll
     - UniTask.dll
     - TEngine.Runtime.dll
+    - XCharts.Runtime.dll
+    - VLC.dll
     LogicMainDllName: GameLogic.dll
     AssemblyTextAssetExtension: .bytes
     AssemblyTextAssetPath: AssetRaw/DLL

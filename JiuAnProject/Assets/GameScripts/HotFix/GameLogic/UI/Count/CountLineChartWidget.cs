@@ -9,88 +9,27 @@ namespace GameLogic
 {
     public class CountLineChartWidget : UIWidget
     {
-        public class WidgetData
+        public enum CountLineType
         {
-            public int groupID;
-            //7200~93600 2:00~次日2:00
-            public List<int> inStatus; //随时间降序（从7200开始的秒数） 7200<->2:00
-            public List<int> outStatus; //随时间降序（从7200开始的秒数）
+            In = 0,
+            Out,
+            Stock
         }
         
         private LineChart _lineChart;
-        private int curInCount = 0;
-        private int curOutCount = 0;
-        private int stockCount => curInCount - curOutCount;
-        public void Init(WidgetData data)
+        public LineChart LineChart => _lineChart;
+        protected override void OnCreate()
         {
             _lineChart = transform.GetComponent<LineChart>();
-            if (data == null)
-            {
-                Log.Warning("LineChartData为null");
-                return;
-            }
-            _lineChart.EnsureChartComponent<Title>().text = $"统计组{data.groupID}";
-            _lineChart.ClearData(); //清空所有图表数据
-            curInCount = data.inStatus.Count;
-            curOutCount = data.outStatus.Count;
-
-            while (data.inStatus.Count > 0 && data.outStatus.Count > 0)
-            {
-                int lastIn = data.inStatus[^1];
-                int lastOut = data.outStatus[^1];
-                if (lastIn < lastOut)
-                {
-                    DrawPoint(1, lastIn);
-                    data.inStatus.RemoveAt(data.inStatus.Count-1);
-                }
-                else
-                {
-                    DrawPoint(2, lastOut);
-                    data.outStatus.RemoveAt(data.outStatus.Count-1);
-                }
-            }
-
-            if (data.inStatus.Count > 0)
-            {
-                for (int i = data.inStatus.Count - 1; i >= 0; i--)
-                {
-                    DrawPoint(1, data.inStatus[i]);
-                    data.inStatus.RemoveAt(i);
-                }
-            }
-            if (data.outStatus.Count > 0)
-            {
-                for (int i = data.outStatus.Count - 1; i >= 0; i--)
-                {
-                    DrawPoint(2, data.outStatus[i]);
-                    data.outStatus.RemoveAt(i);
-                }
-            }
+            _lineChart.EnsureChartComponent<Title>().text = $"{UIGlobalDataInstance.Instance.CurrentGroupID}";
         }
         
-        //status=1表示进, status=2表示出
-        public void DrawPoint(int status, int timeStamp)
+        public void DrawPoint(CountLineType lineType, int timeStamp, int count)
         {
             string timeStr = CustomDataFormatter(timeStamp);
-            //进
-            if (status == 1)
-            {
-                curInCount++;
-                //series0是进的曲线
-                _lineChart.AddData(0, 
-                    new List<double>(){timeStamp, curInCount},
-                    timeStr);
-            }
-            //出
-            else
-            {
-                curOutCount++;
-                //series1是进的曲线
-                _lineChart.AddData(1, 
-                    new List<double>(){timeStamp, curOutCount}, 
-                    timeStr);
-            }
-            _lineChart.AddData(2, new List<double>(){timeStamp, stockCount}, timeStr);
+            _lineChart.AddData((int)lineType, 
+                new List<double>(){timeStamp, count},
+                timeStr);
         }
         
         private string CustomDataFormatter(long timestamp)

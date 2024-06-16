@@ -9,7 +9,9 @@ using UnityEngine.Experimental.Rendering;
 
 namespace GameLogic
 {
+#if UNITY_EDITOR
     [ExecuteInEditMode]
+#endif
     [RequireComponent(typeof(Camera))]
     [RequireComponent(typeof(MeshFilter))]
     [RequireComponent(typeof(MeshRenderer))]
@@ -173,19 +175,24 @@ namespace GameLogic
             //     return;
             // }
             // _mainCamera.enabled = false;
+            
             camera = GetComponent<Camera>();
             AllocateRTIfNeeded();
             camera.targetTexture = _depthRT;
             camera.enabled = true;
 
             await UniTask.DelayFrame(2);
-            
-            camera.targetTexture = null;
-            camera.enabled = false;
-            // _mainCamera.enabled = true;
-            // _mainCamera = null;
+
+            if (camera != null)
+            {
+                camera.targetTexture = null;
+                camera.enabled = false;
+                // _mainCamera.enabled = true;
+                // _mainCamera = null;
+            }
         }
-        
+
+#if UNITY_EDITOR
         [Button("$depthSavePath")]
         public void CreateDepthRT_Offline()
         {
@@ -221,7 +228,7 @@ namespace GameLogic
             }
             _offlineFlag = !_offlineFlag;
         }
-        
+#endif
         
         private Vector2 GetRealScreenSize()
         {

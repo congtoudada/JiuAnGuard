@@ -22,6 +22,7 @@ namespace TEngine
             /// <returns>请求结果。</returns>
             public static async UniTask<string> Get(string url, float timeout = 5f)
             {
+                Log.Info("发送Get请求: " + url);
                 var cts = new CancellationTokenSource();
                 cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
 
@@ -42,6 +43,7 @@ namespace TEngine
                 cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
 
                 using UnityWebRequest unityWebRequest = UnityWebRequest.PostWwwForm(url, postData);
+                // unityWebRequest.SetRequestHeader("Content-Type", "application/json");//添加请求头，指定body中的内容为json
                 return await SendWebRequest(unityWebRequest, cts);
             }
 
@@ -58,6 +60,7 @@ namespace TEngine
                 cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
 
                 using UnityWebRequest unityWebRequest = UnityWebRequest.Post(url, formFields);
+                // unityWebRequest.SetRequestHeader("Content-Type", "application/json");//添加请求头，指定body中的内容为json
                 return await SendWebRequest(unityWebRequest, cts);
             }
 
@@ -70,10 +73,12 @@ namespace TEngine
             /// <returns>请求结果。</returns>
             public static async UniTask<string> Post(string url, WWWForm formData, float timeout = 5f)
             {
+                Log.Info("发送Post请求: " + url);
                 var cts = new CancellationTokenSource();
                 cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
-
+                
                 using UnityWebRequest unityWebRequest = UnityWebRequest.Post(url, formData);
+                // unityWebRequest.SetRequestHeader("Content-Type", "application/json");//添加请求头，指定body中的内容为json
                 return await SendWebRequest(unityWebRequest, cts);
             }
 
