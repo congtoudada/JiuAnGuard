@@ -85,13 +85,21 @@ namespace GameLogic
         {
           query.recordId = Convert.ToInt64(m_inputKey.text);
         }
-        if (!string.IsNullOrEmpty(m_textBeginTime.text))
+        if (m_textBeginTime.text.Length > 2) //处理ZWSP情况（空字符，但实际会跑到非空判断内）
         {
           query.beginTime = m_textBeginTime.text;
         }
-        if (!string.IsNullOrEmpty(m_textEndTime.text))
+        else
+        {
+          query.beginTime = "1970-01-01";
+        }
+        if (m_textEndTime.text.Length > 2)
         {
           query.endTime = m_textEndTime.text;
+        }
+        else
+        {
+          query.endTime = "2999-01-01";
         }
         string pos = m_dpPos.options[m_dpPos.value].text;
         if (!string.IsNullOrEmpty(pos))
@@ -122,7 +130,7 @@ namespace GameLogic
         for (int i = 0; i < resultDTO.list.Count; i++)
         {
           var item = resultDTO.list[i];
-          _recordMgr.SetRecordItem(item.key, item.recordTime, item.name, 
+          _recordMgr.SetRecordItem(item.recordId, item.recordTime, item.name, 
             item.pos, GetStatusStr(item.status), item.shotImg, 
             GetRenderType(item));
         }

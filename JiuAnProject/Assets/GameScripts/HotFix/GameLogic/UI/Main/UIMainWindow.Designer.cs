@@ -10,6 +10,7 @@ namespace GameLogic
 	{
 		#region 脚本工具生成的代码
 		private Button m_btnReset;
+		private Button m_btnCamIsOn;
 		private Toggle m_toggleLock;
 		private Toggle m_toggleWander;
 		private Toggle m_toggleEdit;
@@ -22,7 +23,8 @@ namespace GameLogic
 		private Button m_btnChangeScene;
 		protected override void ScriptGenerator()
 		{
-			m_btnReset = FindChildComponent<Button>("Head/m_btnReset");
+			m_btnReset = FindChildComponent<Button>("Head/Left/m_btnReset");
+			m_btnCamIsOn = FindChildComponent<Button>("Head/Left/m_btnCamIsOn");
 			m_toggleLock = FindChildComponent<Toggle>("Head/Right/m_toggleLock");
 			m_toggleWander = FindChildComponent<Toggle>("Head/Right/m_toggleWander");
 			m_toggleEdit = FindChildComponent<Toggle>("Head/Right/m_toggleEdit");
@@ -34,6 +36,7 @@ namespace GameLogic
 			m_btnSearch = FindChildComponent<Button>("Left/VerticalUp/m_btnSearch");
 			m_btnChangeScene = FindChildComponent<Button>("Left/VerticalUp/m_btnChangeScene");
 			m_btnReset.onClick.AddListener(UniTask.UnityAction(OnClickResetBtn));
+			m_btnCamIsOn.onClick.AddListener(UniTask.UnityAction(OnClickCamIsOnBtn));
 			m_toggleLock.onValueChanged.AddListener(OnToggleLockChange);
 			m_toggleWander.onValueChanged.AddListener(OnToggleWanderChange);
 			m_toggleEdit.onValueChanged.AddListener(OnToggleEditChange);
@@ -58,6 +61,25 @@ namespace GameLogic
 			}
 			Camera.main.transform.DOMove(startPoint.transform.position, 1f);
 			Camera.main.transform.DORotate(startPoint.transform.rotation.eulerAngles, 1f);
+		}
+		private async UniTaskVoid OnClickCamIsOnBtn()
+		{
+			if (!UIGlobalDataInstance.Instance.IsPreview)
+			{
+				UITipWindow.Show("预览警告", main_text: "您是否要预览所有摄像头的画面，如果摄像头数量过多可能造成卡顿。", confirmCallback:
+					() =>
+					{
+						UIGlobalDataInstance.Instance.IsPreview = true;
+						Log.Info($"摄像头预览: {UIGlobalDataInstance.Instance.IsPreview}");
+						UIGlobalDataInstance.Instance.OnPreviewChanged?.Invoke(true);
+					});
+			}
+			else
+			{
+				UIGlobalDataInstance.Instance.IsPreview = false;
+				Log.Info($"摄像头预览: {UIGlobalDataInstance.Instance.IsPreview}");
+				UIGlobalDataInstance.Instance.OnPreviewChanged?.Invoke(false);
+			}
 		}
 		private void OnToggleLockChange(bool isOn)
 		{
@@ -102,7 +124,7 @@ namespace GameLogic
 		}
 		private async UniTaskVoid OnClickSearchBtn()
 		{
- await UniTask.Yield();
+			GameModule.UI.ShowUI<UISearchWindow>();
 		}
 		private async UniTaskVoid OnClickChangeSceneBtn()
 		{

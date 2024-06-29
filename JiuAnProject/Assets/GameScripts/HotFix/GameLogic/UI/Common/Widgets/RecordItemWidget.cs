@@ -139,7 +139,6 @@ namespace GameLogic
 					{
 						UISimpleTipWindow.Show("删除失败");
 					}
-					GameModule.UI.HideUI<UITipWindow>();
 				});
 		}
 		#endregion

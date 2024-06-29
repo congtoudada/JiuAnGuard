@@ -58,7 +58,7 @@ namespace GameLogic
     [Serializable]
     public class RspRecordItemDTO
     {
-        public long key; //记录主键
+        public long recordId; //记录主键
         public string recordTime; //记录时间 yy-mm-dd HH:MM:SS
         public string name; //姓名
         public string pos;  //抓拍点

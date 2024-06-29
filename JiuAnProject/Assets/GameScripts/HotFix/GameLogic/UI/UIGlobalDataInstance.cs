@@ -6,6 +6,7 @@
   功能：
 *****************************************************/
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace GameLogic
     {
         private const string KEY_CURRENT_GROUP_ID = nameof(KEY_CURRENT_GROUP_ID);
         private const string KEY_GROUP_DICT = nameof(KEY_GROUP_DICT);
+        private const string KEY_IS_PREVIEW = nameof(KEY_IS_PREVIEW);
         
         /// <summary>
         /// 摄像头参数列表
@@ -39,6 +41,8 @@ namespace GameLogic
         private Dictionary<string, List<int>> _GroupDict = new Dictionary<string, List<int>>();
 
         public Dictionary<int, RspCameraInfoDTO> CameraInfoDict => _CameraInfoDict;
+        public bool IsPreview = false; //是否预览所有摄像头
+        public Action<bool> OnPreviewChanged;
 
         public string CurrentGroupID
         {
@@ -62,8 +66,6 @@ namespace GameLogic
                 //本地旧缓存
                 _GroupDict = JsonConvert.DeserializeObject<Dictionary<string, List<int>>>(json);
             }
-            
-            
         }
 
         public async UniTask<bool> SendCameraInfoReq()

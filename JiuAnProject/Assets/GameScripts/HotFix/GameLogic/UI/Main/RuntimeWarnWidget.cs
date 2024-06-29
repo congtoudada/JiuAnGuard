@@ -45,7 +45,6 @@ namespace GameLogic
                 {
                     ListChild[^1].Destroy();
                 }
-                GameModule.UI.HideUI<UITipWindow>();
             });
         }
         private async UniTaskVoid OnClickRightSwitchBtn()

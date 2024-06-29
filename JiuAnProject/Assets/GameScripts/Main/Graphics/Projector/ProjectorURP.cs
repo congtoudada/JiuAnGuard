@@ -17,6 +17,7 @@ namespace GameLogic
     [RequireComponent(typeof(MeshRenderer))]
     public class ProjectorURP : MonoBehaviour
     {
+        [Title("Basic Params")]
         //U向剔除的最小和最大值
         [Range(0,1f)]
         [Tooltip("默认0。将U方向小于该值的像素剔除")]
@@ -40,19 +41,65 @@ namespace GameLogic
         [Tooltip("默认0.01。该值越小，前后遮挡关系越清楚")]
         public float depthThreshold = 0.01f; //投影深度容差，值越小，遮挡关系越清楚
         
+        [Title("2D - 3D Projector")]
+        [Range(0, 1f)]
+        [Tooltip("2D投影和3D投影的插值系数")] 
+        public float lerp2Dto3D = 1;
+        [Tooltip("主相机与当前次相机的相对距离系数")] 
+        public float distanceScale = 1f;
+        [Range(-1, 1)]
+        [Tooltip("初始U偏移")] 
+        public float adjOffsetU = 0;
+        [Range(-1, 1)]
+        [Tooltip("初始V偏移")] 
+        public float adjOffsetV = 0;
+        [Range(-2, 2)]
+        [Tooltip("X最小hide值，视口X小于该值会隐藏投影")] 
+        public float hideXMin = 0;
+        [Range(-2, 2)]
+        [Tooltip("X最大hide值，视口X大于该值会隐藏投影")] 
+        public float hideXMax = 1;
+
+        [ReadOnly] public float curViewportX = 0;
+        
+        private Camera mainCamera = null;
         private Camera camera;
         private string depthSavePath = "Create DepthRT Offline (Step1.Render Depth)";
         private Material _projMat;
         [SerializeField, ReadOnly] private RenderTexture _depthRT;
         private RenderTextureDescriptor _descriptor;
+        private Vector2 _viewportPoint = Vector2.one * 0.5f;
+        private float _defaultDis = 0;
+        private MeshRenderer _renderer;
 #if UNITY_EDITOR
         private bool _offlineFlag;
         private Camera _mainCamera;
         private string _depthBtnInfo;
 #endif
+        private static readonly int UMin = Shader.PropertyToID("_uMin");
+        private static readonly int UMax = Shader.PropertyToID("_uMax");
+        private static readonly int VMin = Shader.PropertyToID("_vMin");
+        private static readonly int VMax = Shader.PropertyToID("_vMax");
+        private static readonly int Alpha = Shader.PropertyToID("_Alpha");
+        private static readonly int DepthThreshold = Shader.PropertyToID("_DepthThreshold");
+        private static readonly int FarDistance = Shader.PropertyToID("_FarDistance");
+        private static readonly int NearDistance = Shader.PropertyToID("_NearDistance");
+        private static readonly int SubCameraDepthTexture = Shader.PropertyToID("_SubCameraDepthTexture");
+        private static readonly int Vp = Shader.PropertyToID("_VP");
+        private static readonly int Distance = Shader.PropertyToID("_Distance");
+        private static readonly int UVLerp = Shader.PropertyToID("_UVLerp");
+        private static readonly int OffsetX = Shader.PropertyToID("_OffsetX");
+        private static readonly int OffsetY = Shader.PropertyToID("_OffsetY");
 
         private void OnEnable()
         {
+            mainCamera = Camera.main;
+            if (mainCamera == null)
+            {
+                Debug.LogError("找不到Main Camera!");
+                return;
+            }
+            _renderer = GetComponent<MeshRenderer>();
             camera = GetComponent<Camera>();
             camera.enabled = false;
             _projMat = Application.isPlaying ? GetComponent<MeshRenderer>().materials[0] : GetComponent<MeshRenderer>().sharedMaterials[0];
@@ -60,6 +107,11 @@ namespace GameLogic
             {
                 CreateDepthRT_Runtime().Forget();
             }
+            //预计算初始次相机位置与主相机的视口坐标
+            var position = transform.position;
+            _viewportPoint = mainCamera.WorldToScreenPoint(position);
+            //初始次相机与主相机距离
+            _defaultDis = Vector3.Distance(position, mainCamera.transform.position);
 #if UNITY_EDITOR
             _offlineFlag = false;
 #endif
@@ -78,16 +130,47 @@ namespace GameLogic
         private void Update()
         {
             //获取相关信息
-            _projMat.SetFloat("_uMin", uMin);
-            _projMat.SetFloat("_uMax", uMax);
-            _projMat.SetFloat("_vMin", vMin);
-            _projMat.SetFloat("_vMax", vMax);
-            _projMat.SetFloat("_Alpha", alpha);
-            _projMat.SetFloat("_DepthThreshold", depthThreshold);
-            _projMat.SetFloat("_FarDistance", camera.farClipPlane);
-            _projMat.SetFloat("_NearDistance", camera.nearClipPlane);
-            _projMat.SetTexture("_SubCameraDepthTexture", _depthRT);
-            _projMat.SetMatrix("_VP", GL.GetGPUProjectionMatrix(camera.projectionMatrix, false) * camera.worldToCameraMatrix);
+            _projMat.SetFloat(UMin, uMin);
+            _projMat.SetFloat(UMax, uMax);
+            _projMat.SetFloat(VMin, vMin);
+            _projMat.SetFloat(VMax, vMax);
+            _projMat.SetFloat(Alpha, alpha);
+            _projMat.SetFloat(DepthThreshold, depthThreshold);
+            _projMat.SetFloat(FarDistance, camera.farClipPlane);
+            _projMat.SetFloat(NearDistance, camera.nearClipPlane);
+            _projMat.SetTexture(SubCameraDepthTexture, _depthRT);
+            _projMat.SetMatrix(Vp, GL.GetGPUProjectionMatrix(camera.projectionMatrix, false) * camera.worldToCameraMatrix);
+            if (lerp2Dto3D < 1)
+            {
+                Vector3 position = transform.position;
+                float dis = Vector3.Distance(position, mainCamera.transform.position);
+                _projMat.SetFloat(Distance, dis / _defaultDis * distanceScale);
+                _projMat.SetFloat(UVLerp, lerp2Dto3D);
+                Vector3 curViewport = mainCamera.WorldToScreenPoint(position);
+                float offsetX = (curViewport.x - _viewportPoint.x) / Screen.width + adjOffsetU;
+                float offsetY = (curViewport.y - _viewportPoint.y) / Screen.height + adjOffsetV;
+                _projMat.SetFloat(OffsetX, offsetX);
+                _projMat.SetFloat(OffsetY, offsetY);
+            
+                //处于X边缘就隐藏
+                curViewportX = curViewport.x / Screen.width;
+                if (curViewportX < hideXMin || curViewportX > hideXMax)
+                {
+                    _renderer.enabled = false;
+                }
+                else
+                {
+                    _renderer.enabled = true;
+                }
+            }
+            else
+            {
+                _projMat.SetFloat(Distance, 1);
+                _projMat.SetFloat(UVLerp, lerp2Dto3D);
+                _projMat.SetFloat(OffsetX, 0.5f);
+                _projMat.SetFloat(OffsetY, 0.5f);
+            }
+            
         }
 
         [Button("Create Mesh")]

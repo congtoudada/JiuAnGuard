@@ -91,9 +91,21 @@ namespace GameLogic
                 m_rimgMain.enabled = false;
             }
             m_btnConfirm.onClick.RemoveAllListeners();
+            if (m_textSub.text == "")
+            {
+                m_textSub.gameObject.SetActive(false);
+            }
+            else
+            {
+                m_textSub.gameObject.SetActive(true);
+            }
             if (data.confirmCallback != null)
             {
-                m_btnConfirm.onClick.AddListener(data.confirmCallback);
+                m_btnConfirm.onClick.AddListener(() =>
+                {
+                    data.confirmCallback();
+                    GameModule.UI.HideUI<UITipWindow>();
+                });
             }
             else
             {

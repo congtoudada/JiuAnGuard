@@ -24,10 +24,10 @@ namespace GameLogic
 			CreateWidget<RuntimeWarnWidget>("Right/RuntimeWarnWidget");
 		}
 
-		protected override void OnRefresh()
+		protected override async void OnRefresh()
 		{
 			Log.Info("UIMainWindow OnRefresh");
-			UIGlobalDataInstance.Instance.SendCameraInfoReq().Forget();
+			await UIGlobalDataInstance.Instance.SendCameraInfoReq();
 		}
 
 		protected override void OnSetVisible(bool visible)
