@@ -25,16 +25,23 @@ namespace GameLogic
         protected override void OnCreate()
         {
             UIGlobalDataInstance.Instance.OnCountChanged += OnCountChangedCallback;
+            UIGlobalDataInstance.Instance.OnGroupIDChanged += OnGroupIDChangedCallback;
+            OnGroupIDChangedCallback(UIGlobalDataInstance.Instance.CurrentGroupID);
+            OnCountChangedCallback(0, 0, 0);
         }
 
         protected override void OnDestroy()
         {
             UIGlobalDataInstance.Instance.OnCountChanged -= OnCountChangedCallback;
+            UIGlobalDataInstance.Instance.OnGroupIDChanged -= OnGroupIDChangedCallback;
         }
-        
+
+        private void OnGroupIDChangedCallback(string groupID)
+        {
+            m_textCountTitle.text = groupID;
+        }
         private void OnCountChangedCallback(int inCount, int outCount, int remainCount)
         {
-            m_textCountTitle.text = UIGlobalDataInstance.Instance.CurrentGroupID;
             m_textCountIn.text = inCount.ToString();
             m_textCountOut.text = outCount.ToString();
             m_textCountRemain.text = remainCount.ToString();

@@ -10,7 +10,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using GameLogic;
+using TEngine;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(MeshRenderer))]
 public class BillboardScript : MonoBehaviour
@@ -21,12 +23,16 @@ public class BillboardScript : MonoBehaviour
     public GameObject OutlineObj;
     [Header("视频GameObject")] 
     public GameObject PlayerObj;
-    
+
+    private bool _isHover = false;
     private Camera mainCam;
     private void Start()
     {
         mainCam = Camera.main;
-        UIGlobalDataInstance.Instance.OnPreviewChanged += OnPreviewChangedCallback;
+        if (GameApp.IsFramework)
+        {
+            UIGlobalDataInstance.Instance.OnPreviewChanged += OnPreviewChangedCallback;
+        }
     }
 
     private void Update()
@@ -47,24 +53,28 @@ public class BillboardScript : MonoBehaviour
 
     private void OnMouseEnter()
     {
-        OutlineObj.SetActive(true);
-        PlayerObj.SetActive(true);
-        PlayerObj.GetComponent<VLCPlayerExample>().Play();
+        if (!EventSystem.current.IsPointerOverGameObject())
+        {
+            _isHover = true;
+            Show();
+        }
     }
 
     private void OnMouseExit()
     {
-        if (!UIGlobalDataInstance.Instance.IsPreview)
+        if (_isHover && !UIGlobalDataInstance.Instance.IsPreview)
         {
-            OutlineObj.SetActive(false);
-            PlayerObj.SetActive(false);
-            PlayerObj.GetComponent<VLCPlayerExample>().Pause();
+            _isHover = false;
+            UnShow();
         }
     }
 
     private void OnDestroy()
     {
-        UIGlobalDataInstance.Instance.OnPreviewChanged -= OnPreviewChangedCallback;
+        if (GameApp.IsFramework)
+        {
+            UIGlobalDataInstance.Instance.OnPreviewChanged -= OnPreviewChangedCallback;
+        }
     }
 
     private void OnPreviewChangedCallback(bool isPreview)
@@ -73,15 +83,30 @@ public class BillboardScript : MonoBehaviour
         {
             if (!PlayerObj.activeSelf)
             {
-                OnMouseEnter();
+                Show();
             }
         }
         else
         {
             if (PlayerObj.activeSelf)
             {
-                OnMouseExit();
+                UnShow();
             }
         }
+    }
+
+    private void Show()
+    {
+        //选中被点击的物体
+        OutlineObj.SetActive(true);
+        PlayerObj.SetActive(true);
+        PlayerObj.GetComponent<VLCPlayerExample>().Play();
+    }
+
+    private void UnShow()
+    {
+        OutlineObj.SetActive(false);
+        PlayerObj.SetActive(false);
+        PlayerObj.GetComponent<VLCPlayerExample>().Pause();
     }
 }

@@ -50,7 +50,6 @@ namespace GameLogic
         public int RemainCount = 0;
         //①:进入 ②:离开
         public Action<int, int, int> OnCountChanged; //计数结果改变
-
         public Action<string> OnGroupIDChanged; //统计组改变
         //-------------------- 序列化 --------------------
         public string CurrentGroupID

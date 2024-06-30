@@ -43,10 +43,10 @@ namespace GameLogic
         m_dpPos.AddOptions(posList);
         
         //填充统计组数据
-        List<string> groupList = new List<string>()
-        {
-          UIGlobalDataInstance.DEFAULT_GROUP_ID //默认统计组
-        };
+        List<string> groupList = new List<string>();
+        // {
+        //   UIGlobalDataInstance.DEFAULT_GROUP_ID //默认统计组
+        // };
         groupList.AddRange(UIGlobalDataInstance.Instance.GroupDict.Keys);
         m_dpGroup.ClearOptions();
         m_dpGroup.AddOptions(groupList);
@@ -111,7 +111,7 @@ namespace GameLogic
         {
           query.name = m_inputName.text;
         }
-        query.candidate = UIGlobalDataInstance.Instance.GroupDict[UIGlobalDataInstance.Instance.CurrentGroupID];
+        query.candidate = UIGlobalDataInstance.Instance.GroupDict[m_dpGroup.options[m_dpGroup.value].text];
         query.sort = 1; //默认按编号升序
         string json = JsonConvert.SerializeObject(query);
         form.AddField("DTO", json);

@@ -10,6 +10,8 @@ using TEngine;
 public partial class GameApp:Singleton<GameApp>
 {
     private static List<Assembly> _hotfixAssembly;
+
+    public static bool IsFramework = false;
     
     /// <summary>
     /// 热更域App主入口。
@@ -38,11 +40,10 @@ public partial class GameApp:Singleton<GameApp>
     /// </summary>
     private void StartGameLogic()
     {
-        GameModule.Scene.LoadScene("MainScene", callBack: handle =>
+        IsFramework = true;
+        GameModule.Scene.LoadScene("MainScene",  callBack: handle =>
         {
             Log.Info("加载场景MainScene");
-            GameModule.UI.ShowUI<UICountWindow>();
-            GameModule.UI.HideUI<UICountWindow>();
             GameModule.UI.ShowUI<UIMainWindow>();
         });
     }
@@ -135,6 +136,7 @@ public partial class GameApp:Singleton<GameApp>
             var logic = listLogic[i];
             logic.OnDestroy();
         }
+        IsFramework = false;
     }
 
     private void OnDrawGizmos()
