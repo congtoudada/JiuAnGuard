@@ -8,6 +8,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using Newtonsoft.Json;
 using TEngine;
 using UnityEngine;
@@ -22,17 +23,23 @@ namespace GameLogic
 			OnToggleWanderChange(true);
 			Log.Info("UIMainWindow OnCreate");
 			CreateWidget<RuntimeWarnWidget>("Right/RuntimeWarnWidget");
+			CreateWidget<RuntimeCountInfoWidget>("Right/RuntimeCountInfoWidget");
 		}
 
 		protected override async void OnRefresh()
 		{
 			Log.Info("UIMainWindow OnRefresh");
-			await UIGlobalDataInstance.Instance.SendCameraInfoReq();
+			m_cgVerticalUp.interactable = false;
+			bool ret = await UIGlobalDataInstance.Instance.SendCameraInfoReq();
+			if (ret)
+			{
+				m_cgVerticalUp.interactable = true;
+			}
 		}
-
-		protected override void OnSetVisible(bool visible)
-		{
-			Log.Info("UIMainWindow OnSetVisible");
-		}
+		
+		// protected override void OnSetVisible(bool visible)
+		// {
+		// 	Log.Info("UIMainWindow OnSetVisible");
+		// }
 	}
 }

@@ -49,12 +49,13 @@ namespace GameLogic
 		#region 事件
 		private async UniTaskVoid OnClickSaveBtn()
 		{
+			UIGlobalDataInstance.Instance.CurrentGroupID = readyGroupID;
 			UIGlobalDataInstance.Instance.UpdateGroup(
 				UIGlobalDataInstance.Instance.CurrentGroupID,
 				curWidgets.Select(widget=>widget.Info.id).ToList()
 			);
 			UIGlobalDataInstance.Instance.Save();
-			UISimpleTipWindow.Show("保存成功！");
+			UISimpleTipWindow.Show("应用成功！");
 		}
 		private async UniTaskVoid OnClickDelBtn()
 		{
@@ -89,6 +90,7 @@ namespace GameLogic
 			UIGlobalDataInstance.Instance.Save();
 			RefeshTitle();
 			UISimpleTipWindow.Show("新建成功！");
+			m_inputNewGroup.text = "";
 		}
 		private async UniTaskVoid OnClickRightMoveBtn()
 		{
@@ -123,6 +125,7 @@ namespace GameLogic
 				}
 			}
 		}
+		
 		#endregion
 
 	}

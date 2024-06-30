@@ -42,4 +42,10 @@ public class AutoBindGlobalSetting : ScriptableObject
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
+    
+    [MenuItem("TEngine/RemoveAllPlayerPrefs")]
+    private static void RemoveAllPlayerPrefs()
+    {
+        PlayerPrefs.DeleteAll();
+    }
 }

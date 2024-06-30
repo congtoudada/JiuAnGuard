@@ -3,6 +3,8 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using TEngine;
+using TMPro;
+using UnityEditor;
 
 namespace GameLogic
 {
@@ -15,6 +17,7 @@ namespace GameLogic
 		private Toggle m_toggleWander;
 		private Toggle m_toggleEdit;
 		private Button m_btnQuit;
+		private CanvasGroup m_cgVerticalUp;
 		private Button m_btnCamera;
 		private Button m_btnCount;
 		private Button m_btnFace;
@@ -29,12 +32,13 @@ namespace GameLogic
 			m_toggleWander = FindChildComponent<Toggle>("Head/Right/m_toggleWander");
 			m_toggleEdit = FindChildComponent<Toggle>("Head/Right/m_toggleEdit");
 			m_btnQuit = FindChildComponent<Button>("Left/m_btnQuit");
-			m_btnCamera = FindChildComponent<Button>("Left/VerticalUp/m_btnCamera");
-			m_btnCount = FindChildComponent<Button>("Left/VerticalUp/m_btnCount");
-			m_btnFace = FindChildComponent<Button>("Left/VerticalUp/m_btnFace");
-			m_btnWarn = FindChildComponent<Button>("Left/VerticalUp/m_btnWarn");
-			m_btnSearch = FindChildComponent<Button>("Left/VerticalUp/m_btnSearch");
-			m_btnChangeScene = FindChildComponent<Button>("Left/VerticalUp/m_btnChangeScene");
+			m_cgVerticalUp = FindChildComponent<CanvasGroup>("Left/m_cgVerticalUp");
+			m_btnCamera = FindChildComponent<Button>("Left/m_cgVerticalUp/m_btnCamera");
+			m_btnCount = FindChildComponent<Button>("Left/m_cgVerticalUp/m_btnCount");
+			m_btnFace = FindChildComponent<Button>("Left/m_cgVerticalUp/m_btnFace");
+			m_btnWarn = FindChildComponent<Button>("Left/m_cgVerticalUp/m_btnWarn");
+			m_btnSearch = FindChildComponent<Button>("Left/m_cgVerticalUp/m_btnSearch");
+			m_btnChangeScene = FindChildComponent<Button>("Left/m_cgVerticalUp/m_btnChangeScene");
 			m_btnReset.onClick.AddListener(UniTask.UnityAction(OnClickResetBtn));
 			m_btnCamIsOn.onClick.AddListener(UniTask.UnityAction(OnClickCamIsOnBtn));
 			m_toggleLock.onValueChanged.AddListener(OnToggleLockChange);
@@ -49,7 +53,7 @@ namespace GameLogic
 			m_btnChangeScene.onClick.AddListener(UniTask.UnityAction(OnClickChangeSceneBtn));
 		}
 		#endregion
-
+		
 		#region 事件
 		private async UniTaskVoid OnClickResetBtn()
 		{
@@ -104,7 +108,17 @@ namespace GameLogic
 		}
 		private async UniTaskVoid OnClickQuitBtn()
 		{
-			await UniTask.Yield();
+			UITipWindow.Show(title: "退出", main_text: "您真的要退出吗？", confirmCallback: () =>
+			{
+#if UNITY_EDITOR
+				if (EditorApplication.isPlaying)
+				{
+					EditorApplication.isPlaying = false;
+				}
+#else
+				Application.Quit();
+#endif
+			});
 		}
 		private async UniTaskVoid OnClickCameraBtn()
 		{
@@ -128,7 +142,7 @@ namespace GameLogic
 		}
 		private async UniTaskVoid OnClickChangeSceneBtn()
 		{
- await UniTask.Yield();
+            UISimpleTipWindow.Show("此功能暂未开放");
 		}
 		#endregion
 

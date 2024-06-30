@@ -39,21 +39,44 @@ namespace GameLogic
         /// key: groupID value: camera_id list
         /// </summary>
         private Dictionary<string, List<int>> _GroupDict = new Dictionary<string, List<int>>();
-
         public Dictionary<int, RspCameraInfoDTO> CameraInfoDict => _CameraInfoDict;
+        
+        //-------------------- 非序列化 --------------------
         public bool IsPreview = false; //是否预览所有摄像头
         public Action<bool> OnPreviewChanged;
+        //当前统计组下进入、离开和保有量
+        public int InCount = 0;
+        public int OutCount = 0;
+        public int RemainCount = 0;
+        //①:进入 ②:离开
+        public Action<int, int, int> OnCountChanged; //计数结果改变
 
+        public Action<string> OnGroupIDChanged; //统计组改变
+        //-------------------- 序列化 --------------------
         public string CurrentGroupID
         {
             get => _CurrentGroupID;
-            set => _CurrentGroupID = value;
+            set
+            {
+                if (_CurrentGroupID != value)
+                {
+                    _CurrentGroupID = value;
+                    OnGroupIDChanged?.Invoke(value);
+                }
+            }
         }
         public Dictionary<string, List<int>> GroupDict => _GroupDict;
 
         public UIGlobalDataInstance()
         {
             Load();
+            OnCountChanged = null;
+            OnCountChanged += (inCount, outCount, remainCount) =>
+            {
+                InCount = inCount;
+                OutCount = outCount;
+                RemainCount = remainCount;
+            };
         }
 
         private void Load()
@@ -94,16 +117,42 @@ namespace GameLogic
 
         public List<RspCameraInfoDTO> GetCurrentGroups()
         {
-            return _CameraInfoDict
-                .Where(pair => _GroupDict[_CurrentGroupID].Contains(pair.Key))
-                .Select(pair => pair.Value).ToList();
+            return GetGroups(_CurrentGroupID);
         }
 
         public List<RspCameraInfoDTO> GetNoneCurrentGroups()
         {
-            return _CameraInfoDict
-                .Where(pair => !_GroupDict[_CurrentGroupID].Contains(pair.Key))
-                .Select(pair => pair.Value).ToList();
+            return GetNoneGroups(_CurrentGroupID);
+        }
+        
+        public List<RspCameraInfoDTO> GetGroups(string groupID)
+        {
+            if (_GroupDict.ContainsKey(groupID))
+            {
+                return _CameraInfoDict
+                    .Where(pair => _GroupDict[groupID].Contains(pair.Key))
+                    .Select(pair => pair.Value).ToList();
+            }
+            else
+            {
+                Debug.LogError("无效统计组: " + groupID);
+                return new List<RspCameraInfoDTO>();
+            }
+        }
+
+        public List<RspCameraInfoDTO> GetNoneGroups(string groupID)
+        {
+            if (_GroupDict.ContainsKey(groupID))
+            {
+                return _CameraInfoDict
+                    .Where(pair => !_GroupDict[groupID].Contains(pair.Key))
+                    .Select(pair => pair.Value).ToList();
+            }
+            else
+            {
+                Debug.LogError("无效统计组: " + groupID);
+                return new List<RspCameraInfoDTO>();
+            }
         }
 
         public void UpdateGroup(string groupName, List<int> newGroup)

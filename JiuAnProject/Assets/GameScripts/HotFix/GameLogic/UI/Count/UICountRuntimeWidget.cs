@@ -52,8 +52,8 @@ namespace GameLogic
       GameModule.Setting.RemoveSetting(nameof(_reqRuntimeCountInterval));
 #endif
       _reqRuntimeCountInterval = GameModule.Setting.GetFloat(nameof(_reqRuntimeCountInterval), _reqRuntimeCountInterval);
-      List<int> camList = UIGlobalDataInstance.Instance.GroupDict[UIGlobalDataInstance.Instance.CurrentGroupID];
-      candidate = string.Join(",", camList);
+      UIGlobalDataInstance.Instance.OnGroupIDChanged += OnGroupChangedCallback; //绑定Group变化监听
+      OnGroupChangedCallback(UIGlobalDataInstance.Instance.CurrentGroupID);  //手动调用以初始化
       _chartWidget = CreateWidget<CountLineChartWidget>("CountLineChartWidget");
       // _chartWidget.Init(data);
       // MockData().Forget();
@@ -87,17 +87,31 @@ namespace GameLogic
       if (dto != null)
       {
         Log.Debug($"dto in: {dto.inCount} out: {dto.outCount}");
+        bool isChanged = false;
+        //凌晨清零逻辑
+        if (dto.inCount == 0 && dto.outCount == 0 && (_inCount != 0 || _outCount != 0))
+        {
+          _chartWidget.LineChart.ClearData();
+          _inCount = 0;
+          _outCount = 0;
+        }
         if (_inCount != dto.inCount)
         {
-          _chartWidget.DrawPoint(CountLineChartWidget.CountLineType.In, dto.timestamp, dto.inCount);
+          isChanged = true;
           _inCount = dto.inCount;
+          _chartWidget.DrawPoint(CountLineChartWidget.CountLineType.In, dto.timestamp, dto.inCount);
         }
         if (_outCount != dto.outCount)
         {
-          _chartWidget.DrawPoint(CountLineChartWidget.CountLineType.Out, dto.timestamp, dto.outCount);
+          isChanged = true;
           _outCount = dto.outCount;
+          _chartWidget.DrawPoint(CountLineChartWidget.CountLineType.Out, dto.timestamp, dto.outCount);
         }
-        _chartWidget.DrawPoint(CountLineChartWidget.CountLineType.Stock, dto.timestamp, _inCount - _outCount);
+        if (isChanged)
+        {
+          _chartWidget.DrawPoint(CountLineChartWidget.CountLineType.Stock, dto.timestamp, _inCount - _outCount);
+          UIGlobalDataInstance.Instance.OnCountChanged?.Invoke(dto.inCount, dto.outCount, dto.inCount - dto.outCount);
+        }
       }
       else
       {
@@ -109,8 +123,15 @@ namespace GameLogic
     {
       // CloseReq();
       GameModule.Setting.SetFloat(nameof(_reqRuntimeCountInterval), _reqRuntimeCountInterval);
+      UIGlobalDataInstance.Instance.OnGroupIDChanged -= OnGroupChangedCallback;
     }
 
+    private void OnGroupChangedCallback(string groupID)
+    {
+      List<int> camList = UIGlobalDataInstance.Instance.GroupDict[groupID];
+      candidate = string.Join(",", camList);
+    }
+    
     // private async UniTaskVoid MockData()
     // {
     //   _chartWidget.DrawPoint(1, 8000);

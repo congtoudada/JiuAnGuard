@@ -82,6 +82,8 @@ MonoBehaviour:
       componentName: TMP_Dropdown
     - uiElementRegex: m_toggle
       componentName: Toggle
+    - uiElementRegex: m_cg
+      componentName: CanvasGroup
   m_BybridCLRCustomGlobalSettings:
     HotUpdateAssemblies:
     - GameBase.dll

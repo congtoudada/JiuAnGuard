@@ -41,9 +41,9 @@ public partial class GameApp:Singleton<GameApp>
         GameModule.Scene.LoadScene("MainScene", callBack: handle =>
         {
             Log.Info("加载场景MainScene");
+            GameModule.UI.ShowUI<UICountWindow>();
+            GameModule.UI.HideUI<UICountWindow>();
             GameModule.UI.ShowUI<UIMainWindow>();
-            // GameModule.UI.ShowUI<UICountWindow>();
-            // GameModule.UI.HideUI<UICountWindow>();
         });
     }
 
