@@ -26,6 +26,8 @@ public class BillboardScript : MonoBehaviour
 
     private bool _isHover = false;
     private Camera mainCam;
+    public SubCameraMgr subMgr;
+    private bool _isFirst = true;
     private void Start()
     {
         mainCam = Camera.main;
@@ -33,6 +35,7 @@ public class BillboardScript : MonoBehaviour
         {
             UIGlobalDataInstance.Instance.OnPreviewChanged += OnPreviewChangedCallback;
         }
+        subMgr = transform.parent.GetComponentInChildren<SubCameraMgr>();
     }
 
     private void Update()
@@ -100,6 +103,11 @@ public class BillboardScript : MonoBehaviour
         //选中被点击的物体
         OutlineObj.SetActive(true);
         PlayerObj.SetActive(true);
+        if (_isFirst)
+        {
+            _isFirst = false;
+            PlayerObj.GetComponent<VLCPlayerExample>().Open();
+        }
         PlayerObj.GetComponent<VLCPlayerExample>().Play();
     }
 

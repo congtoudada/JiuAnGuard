@@ -64,11 +64,11 @@ namespace GameLogic
         #region 事件
         private async UniTaskVoid OnClickBackBtn()
         {
-            GameModule.UI.HideUI<UITipWindow>();
+            GameModule.UI.CloseUI<UITipWindow>();
         }
         private async UniTaskVoid OnClickCancelBtn()
         {
-            GameModule.UI.HideUI<UITipWindow>();
+            GameModule.UI.CloseUI<UITipWindow>();
         }
         #endregion
 

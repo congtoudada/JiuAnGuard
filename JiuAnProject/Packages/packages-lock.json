@@ -25,7 +25,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "78a07aa2ae165f3faf011c464212f78f1271f301"
+      "hash": "8af1796ff83c8d470ffd91eb7af0081d5f75449f"
     },
     "com.monitor1394.xcharts.daemon": {
       "version": "https://github.com/XCharts-Team/XCharts-Daemon.git",
@@ -93,7 +93,7 @@
       "url": "https://packages.unity.cn"
     },
     "com.unity.ide.rider": {
-      "version": "3.0.28",
+      "version": "3.0.31",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -213,7 +213,7 @@
       "url": "https://packages.unity.cn"
     },
     "com.unity.textmeshpro": {
-      "version": "3.0.6",
+      "version": "3.0.9",
       "depth": 0,
       "source": "registry",
       "dependencies": {

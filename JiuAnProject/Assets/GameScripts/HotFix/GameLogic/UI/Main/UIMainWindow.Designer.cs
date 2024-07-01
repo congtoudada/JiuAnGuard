@@ -24,6 +24,7 @@ namespace GameLogic
 		private Button m_btnWarn;
 		private Button m_btnSearch;
 		private Button m_btnChangeScene;
+		private Wander _wander;
 		protected override void ScriptGenerator()
 		{
 			m_btnReset = FindChildComponent<Button>("Head/Left/m_btnReset");
@@ -51,6 +52,12 @@ namespace GameLogic
 			m_btnWarn.onClick.AddListener(UniTask.UnityAction(OnClickWarnBtn));
 			m_btnSearch.onClick.AddListener(UniTask.UnityAction(OnClickSearchBtn));
 			m_btnChangeScene.onClick.AddListener(UniTask.UnityAction(OnClickChangeSceneBtn));
+			// _wander = GameObject.FindWithTag("LevelManager").GetComponent<Wander>();
+			_wander = GameModule.Base.gameObject.GetOrAddComponent<Wander>();
+			if (_wander == null)
+			{
+				Debug.LogWarning("找不到Wander脚本!");
+			}
 		}
 		#endregion
 		
@@ -89,21 +96,21 @@ namespace GameLogic
 		{
 			if (isOn)
 			{
-				GameModule.Base.gameObject.GetOrAddComponent<Wander>().enabled = false;
+				_wander.enabled = false;
 			}
 		}
 		private void OnToggleWanderChange(bool isOn)
 		{
 			if (isOn)
 			{
-				GameModule.Base.gameObject.GetOrAddComponent<Wander>().enabled = true;
+				_wander.enabled = true;
 			}
 		}
 		private void OnToggleEditChange(bool isOn)
 		{
 			if (isOn)
 			{
-				GameModule.Base.gameObject.GetOrAddComponent<Wander>().enabled = false;
+				_wander.enabled = false;
 			}
 		}
 		private async UniTaskVoid OnClickQuitBtn()
@@ -122,7 +129,8 @@ namespace GameLogic
 		}
 		private async UniTaskVoid OnClickCameraBtn()
 		{
-			GameModule.UI.ShowUI<UICameraWindow>();
+			// GameModule.UI.ShowUI<UICameraWindow>();
+			Log.Info("ShowUI<UICameraWindow>");
 		}
 		private async UniTaskVoid OnClickCountBtn()
 		{

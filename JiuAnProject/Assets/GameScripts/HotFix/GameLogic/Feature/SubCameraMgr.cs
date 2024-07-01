@@ -1,22 +1,107 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json;
 using Sirenix.OdinInspector;
+using TEngine;
 using UnityEngine;
 
 namespace GameLogic
 {
     public class SubCameraMgr : MonoBehaviour
     {
+        [Serializable]
+        public class SubConfig
+        {
+            public List<string> IPList;
+
+            public SubConfig()
+            {
+                IPList = new List<string>();
+            }
+        }
+        
         private VLCPlayerExample _vlcPlayer;
         private MeshRenderer _renderer;
         private ProjectorURP _projector;
         private Wander _wander;
         private Coroutine _coroutine;
+        //摄像头路径相关
+        private const string CONFIG_FILENAME = "SubCamera.json";
+        private static SubConfig _config;
         
         [Header("投影可视范围")]
         public float visibleRange = 5f;
         [Header("完全显示阈值")] public float visibleThresh = 0.7f;
+        [ReadOnly]
+        [Header("配置项索引 (0为测试路径)"), Tooltip("如果存在配置文件，会解析")] 
+        public int configIdx = 0;
+
+        private void Awake()
+        {
+            if (_config == null)
+            {
+                string path = Path.Combine(Application.persistentDataPath, CONFIG_FILENAME);
+                //存在配置
+                if (File.Exists(path))
+                {
+                    string content = File.ReadAllText(path);
+                    _config = JsonConvert.DeserializeObject<SubConfig>(content);
+                }
+                //不存在配置
+                else
+                {
+                    _config = new SubConfig();
+                    _config.IPList.Add("file://E:/Practice/Unity/Demo/DUT/JiuAnGuard/JiuAnProject/Assets/AssetRaw/Texture/bandicam 2023-03-30 14-28-39-697.mp4");
+                    _config.IPList.Add("rtsp://admin:zwjs1357@192.168.1.111:554/h264/ch1/main/av_stream_count1");
+                    _config.IPList.Add("rtsp://admin:zwjs1357@192.168.1.112:554/h264/ch1/main/av_stream_count2");
+                    _config.IPList.Add("rtsp://admin:zwjs123456@192.168.1.113:554/h264/ch1/main/av_stream_face1");
+                    _config.IPList.Add("rtsp://admin:zwjs1357@192.168.1.114:554/h264/ch1/main/av_stream_face2");
+                    _config.IPList.Add("rtsp://admin:zwjs1357@192.168.1.115:554/h264/ch1/main/av_stream_face3");
+                    _config.IPList.Add("rtsp://admin:zwjs1357@192.168.1.116:554/h264/ch1/main/av_stream_face4");
+                    _config.IPList.Add("rtsp://admin:zwjs1357@192.168.1.117:554/h264/ch1/main/av_stream_intrude1");
+                    _config.IPList.Add("rtsp://admin:zwjs1357@192.168.1.118:554/h264/ch1/main/av_stream_card1");
+                    _config.IPList.Add("rtsp://admin:zwjs1357@192.168.1.119:554/h264/ch1/main/av_stream_right1");
+                    _config.IPList.Add("rtsp://admin:zwjs1357@192.168.1.120:554/h264/ch1/main/av_stream_left1");
+                    string content = JsonConvert.SerializeObject(_config);
+                    File.WriteAllText(path, content);
+                }
+            }
+
+            if (_config != null)
+            {
+                var parent = transform.parent;
+                configIdx = parent.GetSiblingIndex() + 1;
+// #if !UNITY_EDITOR
+//                 configIdx = transform.parent.GetSiblingIndex() + 1;
+// #else
+//                 configIdx = 0;
+//                 // Debug.Log($"{transform.parent.name} SiblingIndex + 1: {transform.parent.GetSiblingIndex() + 1}");
+// #endif
+                VLCPlayerExample vlc = GetComponent<VLCPlayerExample>();
+                VLCPlayerExample vlcPreview = parent.Find("Billboard/Billboard_VPlayer").GetComponent<VLCPlayerExample>();
+                if (vlc)
+                {
+                    if (configIdx < 0 || configIdx >= _config.IPList.Count)
+                    {
+                        Debug.LogWarning("无效索引，无法加载SubConfig配置");
+                        return;
+                    }
+                    vlc.path = _config.IPList[configIdx]; //vlc self
+                    if (vlcPreview)
+                    {
+                        vlcPreview.path = _config.IPList[configIdx]; //vlc preview
+                    }
+                    Log.Info("次相机配置读取成功: " + _config.IPList[configIdx]);
+                }
+            }
+            else
+            {
+                Debug.LogWarning("获取摄像头本地配置失败，次相机无法通过配置文件投屏");
+            }
+        }
+
         // Start is called before the first frame update
         void Start()
         {
@@ -28,21 +113,21 @@ namespace GameLogic
             }
             _renderer = GetComponent<MeshRenderer>();
             _projector = GetComponent<ProjectorURP>();
-            _wander = GameObject.FindWithTag("LevelManager").GetComponent<Wander>();
+            _wander = GameModule.Base.gameObject.GetOrAddComponent<Wander>();
             Hide();
         }
         
         [Button]
         public void Show()
         {
-            _vlcPlayer.Play();
+            _vlcPlayer.Open();
             _renderer.enabled = true;
         }
         
         [Button]
         public void Hide()
         {
-            _vlcPlayer.Pause();
+            _vlcPlayer.Stop();
             _renderer.enabled = false;
         }
 
@@ -57,7 +142,7 @@ namespace GameLogic
         
         private IEnumerator CheckHideEnumerator()
         {
-            while (_wander.curSubMgr == this)
+            while (_wander.scirpt.subMgr == this)
             {
                 float sqrLength = Vector3.SqrMagnitude(transform.position - Camera.main.transform.position);
                 float k = 1 - sqrLength / (visibleRange * visibleRange);
