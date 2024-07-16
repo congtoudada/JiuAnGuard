@@ -59,7 +59,11 @@ namespace GameLogic
             _builder.Append("时间: ").Append(_info.recordTime).AppendLine();
             if (!string.IsNullOrEmpty(_info.name))
             {
-                _builder.Append("姓名: ").Append(_info.name).AppendLine();
+                _builder.Append("可疑人员: ").Append(_info.name).AppendLine();
+            }
+            else
+            {
+                _builder.Append("可疑人员: 未知").AppendLine();
             }
             _builder.Append("抓拍点: ").Append(_info.pos).AppendLine();
             _builder.Append("报警类型: ").Append(m_textTitle.text).AppendLine();

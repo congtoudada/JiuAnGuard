@@ -98,7 +98,7 @@ namespace GameLogic
                 m_goUILoadingWidget.SetActive(true);
                 // 发送查询请求
                 form.AddField("query_directory_or_id", m_inputID.text);
-                string json = await Utility.Http.Post(WebURL.GetReidURL(), form); //图片路径
+                string json = await Utility.Http.Post(WebURL.GetReidURL(), form, 60); //图片路径
                 m_goUILoadingWidget.SetActive(false);
                 if (!string.IsNullOrEmpty(json))
                 {

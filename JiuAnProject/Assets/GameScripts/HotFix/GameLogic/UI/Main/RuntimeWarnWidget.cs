@@ -19,7 +19,7 @@ namespace GameLogic
     public class RuntimeWarnWidget : UIWidget
     {
         private int _maxWarnCount = 150;
-        private float _reqRuntimeWarnInterval = 10f;
+        private float _reqRuntimeWarnInterval = 1f;
         #region 脚本工具生成的代码
         private Transform m_goBG;
         private ScrollRect m_scrollRectRuntimeInfo;

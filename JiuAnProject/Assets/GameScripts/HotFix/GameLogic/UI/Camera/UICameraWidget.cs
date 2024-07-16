@@ -6,6 +6,7 @@
   功能：
 *****************************************************/
 
+using System;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
@@ -76,7 +77,7 @@ namespace GameLogic
 
         public void Refresh(RspCameraInfoDTO info)
         {
-            Log.Debug("刷新UICameraWidget: " + info.streamUrl);
+            Log.Info("刷新UICameraWidget: " + info.streamUrl);
             _VLCPlayer.Open(info.streamUrl);
             m_textCamType.text = "型号：" + info.cameraType;
             m_textCamIp.text = "IP：" + info.address;

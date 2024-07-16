@@ -52,8 +52,8 @@ namespace GameLogic
 			m_btnWarn.onClick.AddListener(UniTask.UnityAction(OnClickWarnBtn));
 			m_btnSearch.onClick.AddListener(UniTask.UnityAction(OnClickSearchBtn));
 			m_btnChangeScene.onClick.AddListener(UniTask.UnityAction(OnClickChangeSceneBtn));
-			// _wander = GameObject.FindWithTag("LevelManager").GetComponent<Wander>();
-			_wander = GameModule.Base.gameObject.GetOrAddComponent<Wander>();
+			_wander = GameObject.FindWithTag("LevelManager").GetComponent<Wander>();
+			// _wander = GameModule.Base.gameObject.GetOrAddComponent<Wander>();
 			if (_wander == null)
 			{
 				Debug.LogWarning("找不到Wander脚本!");
@@ -129,8 +129,7 @@ namespace GameLogic
 		}
 		private async UniTaskVoid OnClickCameraBtn()
 		{
-			// GameModule.UI.ShowUI<UICameraWindow>();
-			Log.Info("ShowUI<UICameraWindow>");
+			GameModule.UI.ShowUI<UICameraWindow>();
 		}
 		private async UniTaskVoid OnClickCountBtn()
 		{

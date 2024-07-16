@@ -22,7 +22,7 @@ namespace TEngine
             /// <returns>请求结果。</returns>
             public static async UniTask<string> Get(string url, float timeout = 5f)
             {
-                Log.Info("发送Get请求: " + url);
+                // Log.Info("发送Get请求: " + url);
                 var cts = new CancellationTokenSource();
                 cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
 

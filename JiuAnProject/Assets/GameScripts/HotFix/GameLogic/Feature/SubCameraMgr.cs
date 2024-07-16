@@ -113,7 +113,8 @@ namespace GameLogic
             }
             _renderer = GetComponent<MeshRenderer>();
             _projector = GetComponent<ProjectorURP>();
-            _wander = GameModule.Base.gameObject.GetOrAddComponent<Wander>();
+            _wander = GameObject.FindWithTag("LevelManager").GetComponent<Wander>();
+            // _wander = GameModule.Base.gameObject.GetOrAddComponent<Wander>();
             Hide();
         }
         

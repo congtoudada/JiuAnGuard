@@ -34,6 +34,7 @@ namespace GameLogic
 			if (ret)
 			{
 				m_cgVerticalUp.interactable = true;
+				GameModule.UI.ShowUIAsync<UICountWindow>();
 			}
 		}
 		
