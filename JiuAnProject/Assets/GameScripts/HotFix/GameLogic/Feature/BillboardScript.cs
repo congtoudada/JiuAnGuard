@@ -9,7 +9,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using GameLogic;
+using Sirenix.OdinInspector;
 using TEngine;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -26,6 +28,7 @@ public class BillboardScript : MonoBehaviour
 
     private bool _isHover = false;
     private Camera mainCam;
+    [Sirenix.OdinInspector.ReadOnly]
     public SubCameraMgr subMgr;
     private bool _isFirst = true;
     private void Start()

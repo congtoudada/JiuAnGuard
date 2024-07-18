@@ -42,12 +42,13 @@ namespace GameLogic
         {
             if (_config == null)
             {
-                string path = Path.Combine(Application.persistentDataPath, CONFIG_FILENAME);
+                string path = Path.Combine(Application.streamingAssetsPath, CONFIG_FILENAME);
                 //存在配置
                 if (File.Exists(path))
                 {
                     string content = File.ReadAllText(path);
-                    _config = JsonConvert.DeserializeObject<SubConfig>(content);
+                    // _config = JsonConvert.DeserializeObject<SubConfig>(content);
+                    _config = JsonUtility.FromJson<SubConfig>(content);
                 }
                 //不存在配置
                 else
@@ -64,7 +65,8 @@ namespace GameLogic
                     _config.IPList.Add("rtsp://admin:zwjs1357@192.168.1.118:554/h264/ch1/main/av_stream_card1");
                     _config.IPList.Add("rtsp://admin:zwjs1357@192.168.1.119:554/h264/ch1/main/av_stream_right1");
                     _config.IPList.Add("rtsp://admin:zwjs1357@192.168.1.120:554/h264/ch1/main/av_stream_left1");
-                    string content = JsonConvert.SerializeObject(_config);
+                    // string content = JsonConvert.SerializeObject(_config, Formatting.None);
+                    string content = JsonUtility.ToJson(_config, true);
                     File.WriteAllText(path, content);
                 }
             }
@@ -72,7 +74,7 @@ namespace GameLogic
             if (_config != null)
             {
                 var parent = transform.parent;
-                configIdx = parent.GetSiblingIndex() + 1;
+                configIdx = parent.GetSiblingIndex() + 1;  //获取实际下标
 // #if !UNITY_EDITOR
 //                 configIdx = transform.parent.GetSiblingIndex() + 1;
 // #else
