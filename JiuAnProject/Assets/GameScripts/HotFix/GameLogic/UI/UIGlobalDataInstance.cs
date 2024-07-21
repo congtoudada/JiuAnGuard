@@ -96,7 +96,7 @@ namespace GameLogic
             //WebURL.Get(WebURL.GetFullURL("camera_list"), content => {Debug.Log("rsp: " + content);}).Forget();
             if (string.IsNullOrEmpty(rsp))
             {
-                UISimpleTipWindow.Show("无法连接服务器，请检查网络");
+                UITipWindow.Show("网络异常", main_text: "无法连接服务器，请检查网络或后端服务是否正常！");
                 return false;
             }
             var ret = JsonConvert.DeserializeObject<List<RspCameraInfoDTO>>(rsp);
