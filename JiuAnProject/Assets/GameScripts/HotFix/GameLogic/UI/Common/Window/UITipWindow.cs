@@ -6,6 +6,7 @@ using TEngine;
 using TMPro;
 using UnityEngine.Events;
 using UnityEngine.Networking;
+using Object = UnityEngine.Object;
 
 namespace GameLogic
 {
@@ -55,7 +56,7 @@ namespace GameLogic
             m_textMain = FindChildComponent<TextMeshProUGUI>("Tip/Center/MainInfo/m_textMain");
             m_textSub = FindChildComponent<TextMeshProUGUI>("Tip/Center/m_textSub");
             m_btnConfirm = FindChildComponent<Button>("Tip/m_btnConfirm");
-            m_btnCancel = FindChildComponent<Button>("Tip/m_btnCancel");
+            m_btnCancel = FindChildComponent<Button>("Tip/m_btnBack");
             m_btnBack.onClick.AddListener(UniTask.UnityAction(OnClickBackBtn));
             m_btnCancel.onClick.AddListener(UniTask.UnityAction(OnClickCancelBtn));
         }
@@ -84,7 +85,17 @@ namespace GameLogic
             if (!string.IsNullOrEmpty(data.img_url))
             {
                 m_rimgMain.enabled = true;
-                m_rimgMain.texture = await Utility.Http.GetTexture(data.img_url);
+                var aspectRatioFitter = m_rimgMain.gameObject.GetComponent<AspectRatioFitter>();
+                if (aspectRatioFitter)
+                {
+                    Object.Destroy(aspectRatioFitter);
+                }
+                var texture = await Utility.Http.GetTexture(data.img_url);
+                float aspectRatio = (float) texture.width / texture.height;
+                m_rimgMain.texture = texture;
+                aspectRatioFitter = m_rimgMain.gameObject.AddComponent<AspectRatioFitter>();
+                aspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+                aspectRatioFitter.aspectRatio = aspectRatio;
             }
             else
             {
