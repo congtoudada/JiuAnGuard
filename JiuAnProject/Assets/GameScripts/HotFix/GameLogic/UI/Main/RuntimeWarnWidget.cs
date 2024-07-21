@@ -22,7 +22,7 @@ namespace GameLogic
     {
         private int _maxWarnCount = 150;
         private float _reqRuntimeWarnInterval = 1f;
-        private bool _isWarnMusic = false;
+        private bool _isWarnMusic = true;
         #region 脚本工具生成的代码
         private GameObject m_goBG;
         private ScrollRect m_scrollRectRuntimeInfo;
@@ -80,7 +80,8 @@ namespace GameLogic
 #if UNITY_EDITOR
             GameModule.Setting.RemoveSetting(nameof(_reqRuntimeWarnInterval));
 #endif
-            _isWarnMusic = GameModule.Setting.GetBool(nameof(_isWarnMusic), false);
+            _isWarnMusic = GameModule.Setting.GetBool(nameof(_isWarnMusic), true);
+            m_btnAudio.transform.FindChildComponent<TextMeshProUGUI>("Text (TMP)").text = _isWarnMusic ? "报警声:开" : "报警声:关";
             _reqRuntimeWarnInterval = GameModule.Setting.GetFloat(nameof(_reqRuntimeWarnInterval), _reqRuntimeWarnInterval);
             m_scrollRectRuntimeInfo.Clear(); //清空已有数据
             _taskID = GameModule.Timer.AddTimer(ReqUpdate, _reqRuntimeWarnInterval, true, true);
