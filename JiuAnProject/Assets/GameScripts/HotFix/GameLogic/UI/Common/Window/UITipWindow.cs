@@ -91,11 +91,14 @@ namespace GameLogic
                     Object.Destroy(aspectRatioFitter);
                 }
                 var texture = await Utility.Http.GetTexture(data.img_url);
-                float aspectRatio = (float) texture.width / texture.height;
-                m_rimgMain.texture = texture;
-                aspectRatioFitter = m_rimgMain.gameObject.AddComponent<AspectRatioFitter>();
-                aspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
-                aspectRatioFitter.aspectRatio = aspectRatio;
+                if (texture)
+                {
+                    float aspectRatio = (float) texture.width / texture.height;
+                    m_rimgMain.texture = texture;
+                    aspectRatioFitter = m_rimgMain.gameObject.AddComponent<AspectRatioFitter>();
+                    aspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+                    aspectRatioFitter.aspectRatio = aspectRatio;
+                }
             }
             else
             {

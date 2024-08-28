@@ -17,6 +17,7 @@ namespace GameLogic
     public class RuntimeWarnItemWidget : UIWidget
     {
         private RspRuntimeWarnDTO _info;
+        private RuntimeWarnWidget _outer;
         #region 脚本工具生成的代码
         private TextMeshProUGUI m_textTitle;
         private TextMeshProUGUI m_textSub;
@@ -33,9 +34,10 @@ namespace GameLogic
         }
         #endregion
 
-        public void Refresh(RspRuntimeWarnDTO info)
+        public void Refresh(RuntimeWarnWidget outer, RspRuntimeWarnDTO info)
         {
             _info = info;
+            _outer = outer;
             m_textTitle.text = RuntimeWarnWidget.GetWarnStr(info.warnType);
             m_textSub.text = info.recordTime;
         }
@@ -49,6 +51,10 @@ namespace GameLogic
         private async UniTaskVoid OnClickKnownBtn()
         {
             Destroy();
+            if (parent.ListChild.Count == 0)
+            {
+                _outer.m_goNew.SetActive(false);
+            }
         }
         #endregion
 

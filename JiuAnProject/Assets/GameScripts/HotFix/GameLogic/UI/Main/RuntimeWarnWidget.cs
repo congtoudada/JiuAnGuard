@@ -26,6 +26,7 @@ namespace GameLogic
         #region 脚本工具生成的代码
         private GameObject m_goBG;
         private ScrollRect m_scrollRectRuntimeInfo;
+        public GameObject m_goNew;
         private Button m_btnAllKnown;
         private Button m_btnAudio;
         private Button m_btnRightSwitch;
@@ -33,6 +34,7 @@ namespace GameLogic
         {
             m_goBG = FindChild("m_goBG").gameObject;
             m_scrollRectRuntimeInfo = FindChildComponent<ScrollRect>("m_goBG/m_scrollRectRuntimeInfo");
+            m_goNew = FindChild("m_goBG/m_goNew").gameObject;
             m_btnAllKnown = FindChildComponent<Button>("m_goBG/Horizontal/m_btnAllKnown");
             m_btnAudio = FindChildComponent<Button>("m_goBG/Horizontal/m_btnAudio");
             m_btnRightSwitch = FindChildComponent<Button>("m_btnRightSwitch");
@@ -51,6 +53,7 @@ namespace GameLogic
                 {
                     ListChild[^1].Destroy();
                 }
+                m_goNew.SetActive(false);
             });
         }
         private async UniTaskVoid OnClickRightSwitchBtn()
@@ -84,6 +87,7 @@ namespace GameLogic
             m_btnAudio.transform.FindChildComponent<TextMeshProUGUI>("Text (TMP)").text = _isWarnMusic ? "报警声:开" : "报警声:关";
             _reqRuntimeWarnInterval = GameModule.Setting.GetFloat(nameof(_reqRuntimeWarnInterval), _reqRuntimeWarnInterval);
             m_scrollRectRuntimeInfo.Clear(); //清空已有数据
+            m_goNew.SetActive(false);
             _taskID = GameModule.Timer.AddTimer(ReqUpdate, _reqRuntimeWarnInterval, true, true);
         }
 
@@ -95,22 +99,32 @@ namespace GameLogic
             }
             // Log.Info("实时报警请求");
             string json = await Utility.Http.Get(WebURL.GetFullURL("runtime_warn"));
-            if (string.IsNullOrEmpty(json)) return;  //存在报警消息则返回
+            if (string.IsNullOrEmpty(json)) return;  //不存在新报警消息则返回
             //否则更新列表并视情况播放报警声
             List<RspRuntimeWarnDTO> dtoList = JsonConvert.DeserializeObject<List<RspRuntimeWarnDTO>>(json);
             for (int i = 0; i < dtoList.Count; i++)
             {
                 var widget = CreateWidgetByPath<RuntimeWarnItemWidget>(m_scrollRectRuntimeInfo.content,
                     nameof(RuntimeWarnItemWidget));
-                widget.Refresh(dtoList[i]);
+                widget.Refresh(this, dtoList[i]);
             }
 
-            if (dtoList.Count > 0 && _isWarnMusic)
+            if (dtoList.Count > 0)
             {
-                GameModule.Audio.Stop(AudioType.UISound, false);
-                GameModule.Audio.Play(AudioType.UISound, "warn_music", volume: 0.5f, bInPool: true);
-            }
+                UISimpleTipWindow.Show("新报警: " + GetWarnStr(dtoList[^1].warnType));
                 
+                if (!m_goNew.activeSelf)
+                {
+                    m_goNew.SetActive(true);
+                }
+
+                if (_isWarnMusic)
+                {
+                    GameModule.Audio.Stop(AudioType.UISound, false);
+                    GameModule.Audio.Play(AudioType.UISound, "warn_music", volume: 0.5f, bInPool: true);
+                }
+            }
+            
             if (ListChild.Count > _maxWarnCount)
             {
                 UITipWindow.Show("报警数过多", main_text: "报警数过多，已暂停在前端实时展示！");

@@ -99,6 +99,7 @@ MonoBehaviour:
     - TEngine.Runtime.dll
     - XCharts.Runtime.dll
     - VLC.dll
+    - Newtonsoft.Json.dll
     LogicMainDllName: GameLogic.dll
     AssemblyTextAssetExtension: .bytes
     AssemblyTextAssetPath: AssetRaw/DLL
