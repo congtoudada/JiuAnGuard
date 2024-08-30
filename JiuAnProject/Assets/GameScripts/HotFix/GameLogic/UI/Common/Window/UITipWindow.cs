@@ -56,7 +56,7 @@ namespace GameLogic
             m_textMain = FindChildComponent<TextMeshProUGUI>("Tip/Center/MainInfo/m_textMain");
             m_textSub = FindChildComponent<TextMeshProUGUI>("Tip/Center/m_textSub");
             m_btnConfirm = FindChildComponent<Button>("Tip/m_btnConfirm");
-            m_btnCancel = FindChildComponent<Button>("Tip/m_btnBack");
+            m_btnCancel = FindChildComponent<Button>("Tip/m_btnCancel");
             m_btnBack.onClick.AddListener(UniTask.UnityAction(OnClickBackBtn));
             m_btnCancel.onClick.AddListener(UniTask.UnityAction(OnClickCancelBtn));
         }

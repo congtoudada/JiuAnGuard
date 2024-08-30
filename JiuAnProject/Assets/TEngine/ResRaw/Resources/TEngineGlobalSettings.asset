@@ -100,6 +100,7 @@ MonoBehaviour:
     - XCharts.Runtime.dll
     - VLC.dll
     - Newtonsoft.Json.dll
+    - ThirdLibrary.dll
     LogicMainDllName: GameLogic.dll
     AssemblyTextAssetExtension: .bytes
     AssemblyTextAssetPath: AssetRaw/DLL

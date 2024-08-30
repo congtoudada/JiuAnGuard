@@ -12,6 +12,7 @@ using DG.Tweening;
 using Newtonsoft.Json;
 using TEngine;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameLogic
 {
@@ -21,6 +22,8 @@ namespace GameLogic
 		protected override void OnCreate()
 		{
 			OnToggleWanderChange(true);
+			m_goUILoadingWidget.SetActive(false);
+			m_btnReboot.GetComponent<Image>().color = Color.white;
 			Log.Info("UIMainWindow OnCreate");
 			CreateWidget<RuntimeWarnWidget>("Right/RuntimeWarnWidget");
 			CreateWidget<RuntimeCountInfoWidget>("Right/RuntimeCountInfoWidget");

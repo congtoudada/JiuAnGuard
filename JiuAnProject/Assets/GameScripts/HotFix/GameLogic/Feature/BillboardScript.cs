@@ -118,6 +118,6 @@ public class BillboardScript : MonoBehaviour
     {
         OutlineObj.SetActive(false);
         PlayerObj.SetActive(false);
-        PlayerObj.GetComponent<VLCPlayerExample>().Pause();
+        PlayerObj.GetComponent<VLCPlayerExample>().Stop();
     }
 }

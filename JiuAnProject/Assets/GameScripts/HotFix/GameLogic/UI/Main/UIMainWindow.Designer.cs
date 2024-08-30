@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,6 +11,8 @@ namespace GameLogic
 {
 	public partial class UIMainWindow
 	{
+		private string sshResult;
+		private bool sshOK;
 		#region 脚本工具生成的代码
 		private Button m_btnReset;
 		private Button m_btnCamIsOn;
@@ -24,6 +27,8 @@ namespace GameLogic
 		private Button m_btnWarn;
 		private Button m_btnSearch;
 		private Button m_btnChangeScene;
+		private Button m_btnReboot;
+		private GameObject m_goUILoadingWidget;
 		private Wander _wander;
 		protected override void ScriptGenerator()
 		{
@@ -40,6 +45,8 @@ namespace GameLogic
 			m_btnWarn = FindChildComponent<Button>("Left/m_cgVerticalUp/m_btnWarn");
 			m_btnSearch = FindChildComponent<Button>("Left/m_cgVerticalUp/m_btnSearch");
 			m_btnChangeScene = FindChildComponent<Button>("Left/m_cgVerticalUp/m_btnChangeScene");
+			m_btnReboot = FindChildComponent<Button>("Left/m_cgVerticalUp/m_btnReboot");
+			m_goUILoadingWidget = FindChild("Right/m_goUILoadingWidget").gameObject;
 			m_btnReset.onClick.AddListener(UniTask.UnityAction(OnClickResetBtn));
 			m_btnCamIsOn.onClick.AddListener(UniTask.UnityAction(OnClickCamIsOnBtn));
 			m_toggleLock.onValueChanged.AddListener(OnToggleLockChange);
@@ -52,6 +59,7 @@ namespace GameLogic
 			m_btnWarn.onClick.AddListener(UniTask.UnityAction(OnClickWarnBtn));
 			m_btnSearch.onClick.AddListener(UniTask.UnityAction(OnClickSearchBtn));
 			m_btnChangeScene.onClick.AddListener(UniTask.UnityAction(OnClickChangeSceneBtn));
+			m_btnReboot.onClick.AddListener(UniTask.UnityAction(OnClickRebootBtn));
 			_wander = GameObject.FindWithTag("LevelManager").GetComponent<Wander>();
 			// _wander = GameModule.Base.gameObject.GetOrAddComponent<Wander>();
 			if (_wander == null)
@@ -150,6 +158,55 @@ namespace GameLogic
 		private async UniTaskVoid OnClickChangeSceneBtn()
 		{
             UISimpleTipWindow.Show("此功能暂未开放");
+		}
+		
+		private async UniTaskVoid OnClickRebootBtn()
+		{
+			if (!m_goUILoadingWidget.activeSelf)
+			{
+				UITipWindow.Show("重启算法", main_text:"重启算法可能需要等待2~5min，请不要中途断开。您确定要重启吗？",
+					confirmCallback: async () =>
+					{
+						m_goUILoadingWidget.SetActive(true);
+						m_btnReboot.GetComponent<Image>().color = new Color(230/255.0f, 147/255.0f, 40/255.0f);
+						SSHTool.getSSHLog += SSHLogCallback;
+						await Task.Run(() =>
+						{
+							SSHTool.RunSSHCommands(WebURL.SERVER_IP, WebURL.SERVER_USERNAME, 
+								WebURL.SERVER_PASSWORD, "source ~/dut/launcher.sh");
+						});
+						m_btnReboot.GetComponent<Image>().color = Color.white;
+						SSHTool.getSSHLog -= SSHLogCallback;
+						m_goUILoadingWidget.SetActive(false);
+						if (sshOK)
+						{
+							UISimpleTipWindow.Show("算法重启成功！");
+						}
+						else
+						{
+							UISimpleTipWindow.Show("算法重启失败！");
+						}
+					});
+			}
+			else
+			{
+				UISimpleTipWindow.Show("算法正在重启，请耐心等待...");
+			}
+		}
+
+		private void SSHLogCallback(bool isOK, string info)
+		{
+			// UISimpleTipWindow.Show(info);
+			// sshResult = info;
+			sshOK = isOK;
+			if (isOK)
+			{
+				Log.Info("Run Shell Succeed: " + info);
+			}
+			else
+			{
+				Log.Warning("Shell Sheel Failed: " + info);
+			}
 		}
 		#endregion
 
