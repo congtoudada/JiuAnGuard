@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
@@ -13,6 +14,9 @@ namespace GameLogic
 	{
 		private string sshResult;
 		private bool sshOK;
+		private bool rebootSucceed;
+		private int waitCnt;
+
 		#region 脚本工具生成的代码
 		private Button m_btnReset;
 		private Button m_btnCamIsOn;
@@ -164,27 +168,49 @@ namespace GameLogic
 		{
 			if (!m_goUILoadingWidget.activeSelf)
 			{
-				UITipWindow.Show("重启算法", main_text:"重启算法可能需要等待2~5min，请不要中途断开。您确定要重启吗？",
+				UITipWindow.Show("重启算法", main_text:"重启算法可能需要等待一小段时间(<10min)，请不要中途断开。您确定要重启吗？",
 					confirmCallback: async () =>
 					{
 						m_goUILoadingWidget.SetActive(true);
 						m_btnReboot.GetComponent<Image>().color = new Color(230/255.0f, 147/255.0f, 40/255.0f);
-						SSHTool.getSSHLog += SSHLogCallback;
+						sshOK = false;
 						await Task.Run(() =>
 						{
+							//执行重启命令
 							SSHTool.RunSSHCommands(WebURL.SERVER_IP, WebURL.SERVER_USERNAME, 
-								WebURL.SERVER_PASSWORD, "source ~/dut/launcher.sh");
+								WebURL.SERVER_PASSWORD, "source /home/ps/dut/launcher.sh");
 						});
-						m_btnReboot.GetComponent<Image>().color = Color.white;
+						
+						// 查询是否重启成功
+						waitCnt = 0;
+						rebootSucceed = false;
+						SSHTool.getSSHLog += SSHLogCallback;
+						while (!rebootSucceed)
+						{
+							if (waitCnt > 300) //5min
+							{
+								break;
+							}
+							await Task.Run(() =>
+							{
+								SSHTool.RunSSHCommands(WebURL.SERVER_IP, WebURL.SERVER_USERNAME, 
+									WebURL.SERVER_PASSWORD, "source /home/ps/dut/check_done.sh");
+							});
+							await UniTask.Delay(1000); //每秒查询一次是否启动结束
+							++waitCnt;
+						}
 						SSHTool.getSSHLog -= SSHLogCallback;
+						m_btnReboot.GetComponent<Image>().color = Color.white;
 						m_goUILoadingWidget.SetActive(false);
 						if (sshOK)
 						{
-							UISimpleTipWindow.Show("算法重启成功！");
+							// 5s重启命令等待+3s网络延迟
+							UISimpleTipWindow.Show("算法重启成功！耗时约: " + (waitCnt+8) + "秒", 5.0f);
 						}
 						else
 						{
-							UISimpleTipWindow.Show("算法重启失败！");
+							// UISimpleTipWindow.Show("算法重启失败！");
+							UITipWindow.Show("算法启动结果", main_text:"算法重启失败，请尝试重新启动或联系相关负责人。");
 						}
 					});
 			}
@@ -196,16 +222,24 @@ namespace GameLogic
 
 		private void SSHLogCallback(bool isOK, string info)
 		{
-			// UISimpleTipWindow.Show(info);
-			// sshResult = info;
-			sshOK = isOK;
-			if (isOK)
+			try
 			{
-				Log.Info("Run Shell Succeed: " + info);
+				// UISimpleTipWindow.Show(info);
+				// sshResult = info;
+				sshOK = isOK;
+				if (isOK)
+				{
+					Log.Info("Run Shell Succeed: " + info);
+					rebootSucceed = Convert.ToInt32(info) == 1; //重启成功
+				}
+				else
+				{
+					Log.Warning("Shell Sheel Failed: " + info);
+				}
 			}
-			else
+			catch (Exception e)
 			{
-				Log.Warning("Shell Sheel Failed: " + info);
+				Log.Error("Shell Sheel Failed: " + info);
 			}
 		}
 		#endregion
