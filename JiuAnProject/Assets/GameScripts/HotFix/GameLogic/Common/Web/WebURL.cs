@@ -27,7 +27,7 @@ namespace GameLogic
         {
             // return "http://210.30.97.234:5000/process";
             // return "http://localhost:5000/process";
-            return $"{SERVER_IP}:5000/process";
+            return $"http://localhost:8080/process";
         }
     }
 }

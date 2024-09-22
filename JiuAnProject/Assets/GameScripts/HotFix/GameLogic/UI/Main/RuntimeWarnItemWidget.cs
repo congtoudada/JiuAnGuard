@@ -40,6 +40,14 @@ namespace GameLogic
             _outer = outer;
             m_textTitle.text = RuntimeWarnWidget.GetWarnStr(info.warnType);
             m_textSub.text = info.recordTime;
+            if (info.warnScore > UIConstant.WarnThreshold || info.warnScore < 0.01)
+            {
+                transform.GetComponent<Image>().SetSprite("main_right_recordItem");
+            }
+            else
+            {
+                transform.GetComponent<Image>().SetSprite("main_right_recordItem2");
+            }
         }
 
         #region 事件
@@ -73,6 +81,7 @@ namespace GameLogic
             }
             _builder.Append("抓拍点: ").Append(_info.pos).AppendLine();
             _builder.Append("报警类型: ").Append(m_textTitle.text).AppendLine();
+            _builder.Append("报警置信度: ").Append(_info.warnScore.ToString("0.00")).AppendLine();
             return _builder.ToString();
         }
     }

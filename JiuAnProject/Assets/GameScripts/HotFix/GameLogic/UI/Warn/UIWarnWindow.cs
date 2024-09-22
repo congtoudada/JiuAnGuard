@@ -18,15 +18,17 @@ namespace GameLogic
     {
         protected override List<string> pageNames { get; } = new List<string>()
         {
-            "记录"
+            "记录",
+            "设置"
         };
 
-        protected override string title { get; } = "报警统计";
+        protected override string title { get; } = "报警操作";
 
         protected override void BindMemberProperty()
         {
             //初始化菜单栏.
             CreateWidgetByPath<UIWarnRecordWidget>(m_goContainer.transform, nameof(UIRecordWidget), false);
+            CreateWidgetByPath<UIWarnSettingWidget>(m_goContainer.transform, nameof(UIWarnSettingWidget), false);
         }
     }
 }

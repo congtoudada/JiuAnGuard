@@ -64,6 +64,7 @@ namespace GameLogic
         public string pos;  //抓拍点
         public int status;  //方向信息(1进2出) 警告信息(1:打电话 2:安全帽 3:代刷卡 4:特定区域入侵)
         public string shotImg; //抓拍图url
+        public float warnScore; //报警置信度
     }
     
     /// <summary>
@@ -77,5 +78,6 @@ namespace GameLogic
         public string pos; //抓拍点
         public int warnType; //警告类型 (1: 打电话 2: 安全帽 3:代刷卡 4:特定区域入侵)
         public string shotImg; //抓拍图url
+        public float warnScore; //报警置信度
     }
 }

@@ -131,7 +131,7 @@ namespace GameLogic
         {
           var item = resultDTO.list[i];
           _recordMgr.SetRecordItem(item.recordId, item.recordTime, item.name, 
-            item.pos, GetStatusStr(item.status), item.shotImg, 
+            item.pos, GetStatusStr(item.status), item.shotImg, item.warnScore,
             GetRenderType(item));
         }
         _recordMgr.RefreshPageWidget(resultDTO.totalCount, resultDTO.page);
@@ -142,7 +142,14 @@ namespace GameLogic
 
       protected virtual RecordItemWidget.RenderTypeEnum GetRenderType(RspRecordItemDTO item)
       {
-        return RecordItemWidget.RenderTypeEnum.Red;
+        if (item.warnScore > UIConstant.WarnThreshold || item.warnScore < 0.01)
+        {
+          return RecordItemWidget.RenderTypeEnum.Red;
+        }
+        else
+        {
+          return RecordItemWidget.RenderTypeEnum.Green;
+        }
       }
     }
 }

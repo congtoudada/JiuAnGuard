@@ -97,7 +97,7 @@ namespace GameLogic
                 WWWForm form = new WWWForm();
                 m_goUILoadingWidget.SetActive(true);
                 // 发送查询请求
-                form.AddField("query_directory_or_id", m_inputID.text);
+                form.AddField("query_id", m_inputID.text);
                 string json = await Utility.Http.Post(WebURL.GetReidURL(), form, 60); //图片路径
                 m_goUILoadingWidget.SetActive(false);
                 if (!string.IsNullOrEmpty(json))
@@ -112,12 +112,12 @@ namespace GameLogic
                 }
                 else
                 {
-                    UISimpleTipWindow.Show("Reid服务异常！");
+                    UISimpleTipWindow.Show("Reid服务响应异常！");
                 }
             }
             catch (Exception e)
             {
-                UISimpleTipWindow.Show("Reid服务异常！");
+                UISimpleTipWindow.Show("Reid服务请求异常！");
             }
            
         }

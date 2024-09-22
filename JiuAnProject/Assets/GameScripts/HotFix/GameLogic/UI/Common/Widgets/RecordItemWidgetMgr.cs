@@ -107,10 +107,10 @@ namespace GameLogic
         }
 
         public void SetRecordItem(long key, string recordTime, string name, 
-            string pos, string status, string img_url, RecordItemWidget.RenderTypeEnum renderType)
+            string pos, string status, string img_url, float warnScore, RecordItemWidget.RenderTypeEnum renderType)
         {
             if (add_idx >= PAGE_MAX) return;
-            _itemList[add_idx].Update(this, key, recordTime, name, pos, status, img_url, renderType);
+            _itemList[add_idx].Update(this, key, recordTime, name, pos, status, img_url, warnScore, renderType);
             _itemList[add_idx].Visible = true;
             add_idx++;
         }

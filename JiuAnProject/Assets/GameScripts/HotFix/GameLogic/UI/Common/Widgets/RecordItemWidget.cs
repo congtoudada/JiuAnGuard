@@ -30,6 +30,7 @@ namespace GameLogic
 		private string pos;
 		private string status;
 		private string img_url;
+		private float warnScore;
 		private RenderTypeEnum renderType; //0:红 1:绿
 
 		public RenderTypeEnum RenderType
@@ -72,6 +73,12 @@ namespace GameLogic
 		{
 			get => status;
 			set => status = value;
+		}
+		
+		public float WarnScore
+		{
+			get => warnScore;
+			set => warnScore = value;
 		}
 
 		private RecordItemWidgetMgr mgr;
@@ -147,11 +154,11 @@ namespace GameLogic
 		{
 			if (item != this)
 				Update(item.mgr, item.Key, item.RecordTime, item.Name, item.Pos, 
-					item.Status, item.ImgURL, item.renderType);
+					item.Status, item.ImgURL, item.warnScore, item.renderType);
 		}
 		
 		public void Update(RecordItemWidgetMgr mgr, long key, string recordTime, string name, 
-			string pos, string status, string img_url, RenderTypeEnum renderType)
+			string pos, string status, string img_url, float warnScore, RenderTypeEnum renderType)
 		{
 			this.mgr = mgr;
 			Key = key;
@@ -160,6 +167,7 @@ namespace GameLogic
 			Pos = pos;
 			Status = status;
 			ImgURL = img_url;
+			WarnScore = warnScore;
 			RenderType = renderType;
 			Refresh();
 		}
@@ -217,6 +225,7 @@ namespace GameLogic
 			}
 			_builder.Append("抓拍点: ").Append(Pos).AppendLine();
 			_builder.Append("进出状态: ").Append(Status).AppendLine();
+			_builder.Append("报警置信度: ").Append(WarnScore.ToString("0.00")).AppendLine();
 			return _builder.ToString();
 		}
 

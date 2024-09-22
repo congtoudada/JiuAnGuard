@@ -172,15 +172,14 @@ namespace GameLogic
 					confirmCallback: async () =>
 					{
 						m_goUILoadingWidget.SetActive(true);
-						m_btnReboot.GetComponent<Image>().color = new Color(230/255.0f, 147/255.0f, 40/255.0f);
 						sshOK = false;
+						m_btnReboot.GetComponent<Image>().color = new Color(230/255.0f, 147/255.0f, 40/255.0f);
 						await Task.Run(() =>
 						{
 							//执行重启命令
 							SSHTool.RunSSHCommands(WebURL.SERVER_IP, WebURL.SERVER_USERNAME, 
 								WebURL.SERVER_PASSWORD, "source /home/ps/dut/launcher.sh");
 						});
-						
 						// 查询是否重启成功
 						waitCnt = 0;
 						rebootSucceed = false;
@@ -200,7 +199,7 @@ namespace GameLogic
 							++waitCnt;
 						}
 						SSHTool.getSSHLog -= SSHLogCallback;
-						m_btnReboot.GetComponent<Image>().color = Color.white;
+						m_btnReboot.GetComponent<Image>().color = new Color(46/255.0f,220/255.0f,50/255.0f);
 						m_goUILoadingWidget.SetActive(false);
 						if (sshOK)
 						{
