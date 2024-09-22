@@ -13,6 +13,7 @@ namespace GameLogic
     {
         public class WarnSettingInfo
         {
+            public int count = 0; //记录的日志数
             public int intrudeMode = 0; //入侵检测对象
             public string operationInfo = ""; //操作日志
         }
@@ -20,6 +21,7 @@ namespace GameLogic
             Path.Combine(Application.persistentDataPath, $"{nameof(WarnSettingInfo)}.json");
 
         private StringBuilder sb = new StringBuilder();
+        private int count = 0;
         
         #region 脚本工具生成的代码
         private TextMeshProUGUI m_textCurrent;
@@ -38,16 +40,20 @@ namespace GameLogic
         private void OnGroupValueChanged(int value)
         {
             string option = value == 0 ? "所有人" : "非注册人员";
-            AppendInfo($"{DateTime.UtcNow.AddHours(8)} 设置入侵报警对象为{option}\n");
+            AppendInfo($"{DateTime.UtcNow.AddHours(8)} 设置入侵报警对象为：{option}\n");
             SendIntrudeModeRequest(m_dpGroup.value).Forget();
         }
         #endregion
 
         private void AppendInfo(string content)
         {
-            if (sb.ToString().Split("\n").Length > 10)
+            count++;
+            if (count > 10)
+            {
+                count = 1;
                 sb.Clear();
-            sb.Append(content);
+            }
+            sb.Append($"{count}.{content}");
             m_textInfo.text = sb.ToString();
         }
 
@@ -64,6 +70,7 @@ namespace GameLogic
             {
                 string json = File.ReadAllText(OutputPath);
                 WarnSettingInfo info = JsonConvert.DeserializeObject<WarnSettingInfo>(json);
+                count = info.count;
                 m_dpGroup.SetValueWithoutNotify(info.intrudeMode);
                 m_textInfo.text = info.operationInfo;
             }
@@ -76,6 +83,7 @@ namespace GameLogic
             WarnSettingInfo info = new WarnSettingInfo();
             info.intrudeMode = m_dpGroup.value;
             info.operationInfo = m_textInfo.text;
+            info.count = count;
             string json = JsonConvert.SerializeObject(info);
             File.WriteAllText(OutputPath, json);
         }
