@@ -37,11 +37,14 @@ namespace GameLogic
         #endregion
 
         #region 事件
-        private void OnGroupValueChanged(int value)
+        private async void OnGroupValueChanged(int value)
         {
-            string option = value == 0 ? "所有人" : "非注册人员";
-            AppendInfo($"{DateTime.UtcNow.AddHours(8)} 设置入侵报警对象为：{option}\n");
-            SendIntrudeModeRequest(m_dpGroup.value).Forget();
+            bool ret = await SendIntrudeModeRequest(m_dpGroup.value);
+            if (ret)
+            {
+                string option = value == 0 ? "所有人" : "非注册人员";
+                AppendInfo($"{DateTime.UtcNow.AddHours(8)} 设置入侵报警对象为：{option}\n");
+            }
         }
         #endregion
 
@@ -57,9 +60,15 @@ namespace GameLogic
             m_textInfo.text = sb.ToString();
         }
 
-        private async UniTaskVoid SendIntrudeModeRequest(int mode)
+        private async UniTask<bool> SendIntrudeModeRequest(int mode)
         {
-            await Utility.Http.Get(WebURL.GetFullURL($"intrude?mode={mode}"));
+            string ret = await Utility.Http.Get(WebURL.GetFullURL($"intrude?mode={mode}"));
+            if (string.IsNullOrEmpty(ret))
+            {
+                UISimpleTipWindow.Show("设置入侵检测对象失败，网络异常！");
+                return false;
+            }
+            return true;
         }
 
         protected override void OnCreate()
