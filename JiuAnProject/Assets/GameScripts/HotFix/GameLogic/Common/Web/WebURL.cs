@@ -12,7 +12,7 @@ namespace GameLogic
     {
         // public const string BASE_URL = "http://127.0.0.1:9012/unity/";
         public const string WEB_URL = "http://localhost:8080/unity/";
-        public const string SERVER_IP = "10.0.8.199";
+        public const string SERVER_IP = "10.0.5.195";
         public const string SERVER_USERNAME = "ps";
         public const string SERVER_PASSWORD = "1";
         // public const string BASE_URL = "http://192.168.43.245:8080/unity/";

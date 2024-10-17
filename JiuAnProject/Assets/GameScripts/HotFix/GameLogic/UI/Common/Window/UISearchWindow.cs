@@ -26,6 +26,7 @@ namespace GameLogic
         {
             public string shotImg;
             public string camId;
+            public string pos;
             public string recordTime;
         }
 
@@ -106,7 +107,7 @@ namespace GameLogic
                     List<ReIDInfo> reidList = JsonConvert.DeserializeObject<List<ReIDInfo>>(json);
                     for (int i = 0; i < reidList.Count; i++)
                     {
-                        SetText(i, reidList[i].camId, reidList[i].recordTime);
+                        SetText(i, $"{reidList[i].camId}.{reidList[i].pos}", reidList[i].recordTime);
                         SetTexture(i, reidList[i].shotImg);
                     }
                 }
@@ -146,7 +147,7 @@ namespace GameLogic
         private void SetText(int idx, string camId, string timeStr)
         {
             if (idx < 0 || idx >= m_textArray.Count) return;
-            m_textArray[idx].text = $"摄像头编号: {camId}\n{timeStr}";
+            m_textArray[idx].text = $"{camId}\n{timeStr}";
         }
 
         private async void SetTexture(int idx, string shotImg)

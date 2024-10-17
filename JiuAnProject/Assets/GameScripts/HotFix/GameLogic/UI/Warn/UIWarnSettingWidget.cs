@@ -45,6 +45,11 @@ namespace GameLogic
                 string option = value == 0 ? "所有人" : "非注册人员";
                 AppendInfo($"{DateTime.UtcNow.AddHours(8)} 设置入侵报警对象为：{option}\n");
             }
+            else
+            {
+                // 设置失败就切回去
+                m_dpGroup.SetValueWithoutNotify((value + 1) % 2);
+            }
         }
         #endregion
 
