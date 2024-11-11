@@ -85,10 +85,16 @@ namespace GameLogic
                 VLCPlayerExample vlcPreview = parent.Find("Billboard/Billboard_VPlayer").GetComponent<VLCPlayerExample>();
                 if (vlc)
                 {
+                    if (_config.IPList.Count == 0)
+                    {
+                        Debug.LogWarning($"配置不存在，请检查{CONFIG_FILENAME}配置");
+                        return;
+                    }
                     if (configIdx < 0 || configIdx >= _config.IPList.Count)
                     {
-                        Debug.LogWarning("无效索引，无法加载SubConfig配置");
-                        return;
+                        //调试模式运行次相机
+                        Debug.Log($"只有一项配置，默认以调试模式运行！");
+                        configIdx = 0;
                     }
                     vlc.path = _config.IPList[configIdx]; //vlc self
                     if (vlcPreview)

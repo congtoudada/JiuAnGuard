@@ -41,7 +41,7 @@ public partial class GameApp:Singleton<GameApp>
     private void StartGameLogic()
     {
         IsFramework = true;
-        GameModule.Scene.LoadScene("MainScene",  callBack: handle =>
+        GameModule.Scene.LoadScene("MainScene2",  callBack: handle =>
         {
             Log.Info("加载场景MainScene");
             GameModule.UI.ShowUI<UIMainWindow>();

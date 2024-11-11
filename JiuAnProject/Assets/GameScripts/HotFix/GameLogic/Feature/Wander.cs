@@ -80,6 +80,8 @@ namespace GameLogic
                                 scirpt.subMgr.Show();
                                 Transform target = hit.transform.parent.GetChild(0);
                                 Vector3 destPos = target.position; //拿兄弟节点Transform，其本质是实际的SubCamera
+                                float subFov = target.GetComponent<Camera>().fieldOfView;
+                                destPos -= target.forward * 7.0f * Mathf.Lerp(0, 1, (subFov - mainCamera.fieldOfView) / 45.0f);
                                 mainCamera.transform.DOMove(destPos, lerpDuration).onComplete += () =>
                                 {
                                     scirpt.subMgr.LaunchCheckHide();
