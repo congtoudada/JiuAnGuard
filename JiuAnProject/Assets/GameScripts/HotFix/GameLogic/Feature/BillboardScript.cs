@@ -29,7 +29,18 @@ public class BillboardScript : MonoBehaviour
     private bool _isHover = false;
     private Camera mainCam;
     [Sirenix.OdinInspector.ReadOnly]
-    public SubCameraMgr subMgr;
+    private SubCameraMgr _subMgr;
+
+    public SubCameraMgr subMgr
+    {
+        get
+        {
+            if (_subMgr == null)
+                _subMgr = transform.parent.GetComponentInChildren<SubCameraMgr>();
+            return _subMgr;
+        }
+    }
+    
     private bool _isFirst = true;
     private void Start()
     {
@@ -38,7 +49,6 @@ public class BillboardScript : MonoBehaviour
         {
             UIGlobalDataInstance.Instance.OnPreviewChanged += OnPreviewChangedCallback;
         }
-        subMgr = transform.parent.GetComponentInChildren<SubCameraMgr>();
     }
 
     private void Update()

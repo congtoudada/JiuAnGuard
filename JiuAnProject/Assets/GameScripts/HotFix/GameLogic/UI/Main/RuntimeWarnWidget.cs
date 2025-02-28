@@ -20,7 +20,7 @@ namespace GameLogic
 {
     public class RuntimeWarnWidget : UIWidget
     {
-        private int _maxWarnCount = 150;
+        private int _maxWarnCount = UIConstant.MaxWarnCount;
         private float _reqRuntimeWarnInterval = 1f;
         private bool _isWarnMusic = true;
         #region 脚本工具生成的代码

@@ -47,8 +47,11 @@ namespace GameLogic
 			SSHTool.getSSHLog += CheckAlgorithmCallback;
 			await Task.Run(() =>
 			{
-				SSHTool.RunSSHCommands(WebURL.SERVER_IP, WebURL.SERVER_USERNAME, 
-					WebURL.SERVER_PASSWORD, "source /home/ps/dut/check_done.sh");
+				foreach (var remote in WebURL.RemoteList)
+				{
+					SSHTool.RunSSHCommands(remote.ServerIp, remote.Username, 
+						remote.Password, $"source /home/{remote.Username}/dut/check_done.sh");
+				}
 			});
 			SSHTool.getSSHLog -= CheckAlgorithmCallback;
 		}
@@ -80,7 +83,7 @@ namespace GameLogic
 			}
 			catch (Exception e)
 			{
-				Log.Error("Shell Sheel Failed: " + info);
+				Log.Warning("Shell Sheel Failed: " + info);
 			}
 		}
 		// protected override void OnSetVisible(bool visible)

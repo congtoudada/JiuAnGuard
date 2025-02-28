@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Sirenix.OdinInspector;
 using TEngine;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace GameLogic
 {
@@ -28,7 +29,7 @@ namespace GameLogic
         private Wander _wander;
         private Coroutine _coroutine;
         //摄像头路径相关
-        private const string CONFIG_FILENAME = "SubCamera.json";
+        private static string CONFIG_FILENAME = "SubCamera.json";
         private static SubConfig _config;
         
         [Header("投影可视范围")]
@@ -40,6 +41,7 @@ namespace GameLogic
 
         private void Awake()
         {
+            CONFIG_FILENAME = SceneManager.GetActiveScene().name + ".json";
             if (_config == null)
             {
                 string path = Path.Combine(Application.streamingAssetsPath, CONFIG_FILENAME);
@@ -151,7 +153,7 @@ namespace GameLogic
         
         private IEnumerator CheckHideEnumerator()
         {
-            while (_wander.scirpt.subMgr == this)
+            while (_wander.bScript.subMgr == this)
             {
                 float sqrLength = Vector3.SqrMagnitude(transform.position - Camera.main.transform.position);
                 float k = 1 - sqrLength / (visibleRange * visibleRange);

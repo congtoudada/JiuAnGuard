@@ -176,9 +176,13 @@ namespace GameLogic
 						m_btnReboot.GetComponent<Image>().color = new Color(230/255.0f, 147/255.0f, 40/255.0f);
 						await Task.Run(() =>
 						{
-							//执行重启命令
-							SSHTool.RunSSHCommands(WebURL.SERVER_IP, WebURL.SERVER_USERNAME, 
-								WebURL.SERVER_PASSWORD, "source /home/ps/dut/launcher.sh");
+							foreach (var remote in WebURL.RemoteList)
+							{
+								//执行重启命令
+								SSHTool.RunSSHCommands(remote.ServerIp, remote.Username, 
+									remote.Password, $"source /home/{remote.Username}/dut/launcher.sh");
+							}
+							
 						});
 						// 查询是否重启成功
 						waitCnt = 0;
@@ -192,8 +196,12 @@ namespace GameLogic
 							}
 							await Task.Run(() =>
 							{
-								SSHTool.RunSSHCommands(WebURL.SERVER_IP, WebURL.SERVER_USERNAME, 
-									WebURL.SERVER_PASSWORD, "source /home/ps/dut/check_done.sh");
+								foreach (var remote in WebURL.RemoteList)
+								{
+									//执行重启命令
+									SSHTool.RunSSHCommands(remote.ServerIp, remote.Username, 
+										remote.Password, $"source /home/{remote.Username}/dut/check_done.sh");
+								}
 							});
 							await UniTask.Delay(1000); //每秒查询一次是否启动结束
 							++waitCnt;

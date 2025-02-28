@@ -28,7 +28,7 @@ namespace GameLogic
         private Vector3 _moveDir;
         private float _moveSpeed; //内部速度
         [HideInInspector]
-        public BillboardScript scirpt;
+        public BillboardScript bScript;
 
         private bool _inputLock;
         // Start is called before the first frame update
@@ -71,24 +71,12 @@ namespace GameLogic
                         // 进行射线检测
                         if (Physics.Raycast(ray, out hit))
                         {
-                            _inputLock = true;
+                            // _inputLock = true;
                             // 如果射线碰到物体，输出物体的名字
-                            // Debug.Log("Clicked object: " + hit.transform.name);
+                            // Log.Info("Clicked object: " + hit.transform.name);
                             if (hit.transform.CompareTag("Billboard"))
                             {
-                                scirpt = hit.transform.GetComponent<BillboardScript>();
-                                scirpt.subMgr.Show();
-                                Transform target = hit.transform.parent.GetChild(0);
-                                Vector3 destPos = target.position; //拿兄弟节点Transform，其本质是实际的SubCamera
-                                float subFov = target.GetComponent<Camera>().fieldOfView;
-                                destPos -= target.forward * 7.0f * Mathf.Lerp(0, 1, (subFov - mainCamera.fieldOfView) / 45.0f);
-                                mainCamera.transform.DOMove(destPos, lerpDuration).onComplete += () =>
-                                {
-                                    scirpt.subMgr.LaunchCheckHide();
-                                    _inputLock = false;
-                                };
-                                // mainCamera.transform.DOLookAt(destPos + target.forward * mainCamera.farClipPlane, lerpDuration);
-                                mainCamera.transform.DORotateQuaternion(target.rotation, lerpDuration);
+                                ProcessBillboard(hit.transform.GetComponent<BillboardScript>());
                             }
                         }
                     }
@@ -112,6 +100,28 @@ namespace GameLogic
                     // ignored
                 }
             }
+        }
+
+        public void ProcessBillboard(BillboardScript bScript)
+        {
+            if (bScript == null)
+            {
+                Log.Warning("BillboardScript is null!");
+                return;
+            }
+            this.bScript = bScript;
+            bScript.subMgr.Show();
+            Transform target = bScript.transform.parent.GetChild(0);
+            Vector3 destPos = target.position; //拿兄弟节点Transform，其本质是实际的SubCamera
+            float subFov = target.GetComponent<Camera>().fieldOfView;
+            destPos -= target.forward * 7.0f * Mathf.Lerp(0, 1, (subFov - mainCamera.fieldOfView) / 45.0f);
+            mainCamera.transform.DOMove(destPos, lerpDuration).onComplete += () =>
+            {
+                bScript.subMgr.LaunchCheckHide();
+                // _inputLock = false;
+            };
+            // mainCamera.transform.DOLookAt(destPos + target.forward * mainCamera.farClipPlane, lerpDuration);
+            mainCamera.transform.DORotateQuaternion(target.rotation, lerpDuration);
         }
     }
 }

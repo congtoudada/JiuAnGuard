@@ -37,7 +37,7 @@ namespace GameLogic
         #endregion
 
         #region 事件
-        private async UniTaskVoid OnClickCloseBtn()
+        public async UniTaskVoid OnClickCloseBtn()
         {
             GameModule.UI.HideUI(this.GetType());
         }
