@@ -22,11 +22,12 @@ namespace GameLogic
 	[Window(UILayer.UI)]
 	public partial class UIMainWindow : UIWindow
 	{
+		private int _algorithmRunCnt = 0;
 		protected override void OnCreate()
 		{
 			OnToggleWanderChange(true);
 			m_goUILoadingWidget.SetActive(false);
-			m_btnReboot.GetComponent<Image>().color = Color.white;
+			// m_btnReboot.GetComponent<Image>().color = Color.white;
 			Log.Info("UIMainWindow OnCreate");
 			CreateWidget<RuntimeWarnWidget>("Right/RuntimeWarnWidget");
 			CreateWidget<RuntimeCountInfoWidget>("Right/RuntimeCountInfoWidget");
@@ -44,6 +45,7 @@ namespace GameLogic
 				GameModule.UI.ShowUIAsync<UICountWindow>();
 			}
 			//验证算法端是否正常
+			_algorithmRunCnt = 0;
 			SSHTool.getSSHLog += CheckAlgorithmCallback;
 			await Task.Run(() =>
 			{
@@ -54,6 +56,16 @@ namespace GameLogic
 				}
 			});
 			SSHTool.getSSHLog -= CheckAlgorithmCallback;
+			if (_algorithmRunCnt == WebURL.RemoteList.Count)
+			{
+				Log.Info($"所有算法正在运行，数量: {_algorithmRunCnt}");
+				m_btnReboot.GetComponent<Image>().color = new Color(46/255.0f,220/255.0f,50/255.0f);
+			}
+			else
+			{
+				Log.Info($"存在算法未启动，正常运行的数量: {_algorithmRunCnt} | 尚未启动的数量: {WebURL.RemoteList.Count-_algorithmRunCnt}");
+				m_btnReboot.GetComponent<Image>().color = Color.red;
+			}
 		}
 
 		private void CheckAlgorithmCallback(bool isOK, string info)
@@ -69,11 +81,7 @@ namespace GameLogic
 					bool isRunning = Convert.ToInt32(info) == 1; //重启成功
 					if (isRunning)
 					{
-						m_btnReboot.GetComponent<Image>().color = new Color(46/255.0f,220/255.0f,50/255.0f);
-					}
-					else
-					{
-						m_btnReboot.GetComponent<Image>().color = Color.red;
+						_algorithmRunCnt++;
 					}
 				}
 				else

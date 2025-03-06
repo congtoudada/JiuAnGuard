@@ -76,7 +76,7 @@ namespace GameLogic
         public string recordTime; //记录时间 yy-mm-dd HH:MM:SS
         public string name; //姓名
         public string pos; //抓拍点
-        public int warnType; //警告类型 (1: 打电话 2: 安全帽 3:代刷卡 4:特定区域入侵)
+        public int status; //警告类型 (1: 打电话 2: 安全帽 3:代刷卡 4:特定区域入侵)
         public string shotImg; //抓拍图url
         public float warnScore; //报警置信度
     }

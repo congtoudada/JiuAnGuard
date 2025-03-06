@@ -10,6 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Cysharp.Threading.Tasks;
 using GameLogic;
 using Sirenix.OdinInspector;
 using TEngine;
@@ -119,9 +120,24 @@ public class BillboardScript : MonoBehaviour
         if (_isFirst)
         {
             _isFirst = false;
+            
             PlayerObj.GetComponent<VLCPlayerExample>().Open();
         }
-        PlayerObj.GetComponent<VLCPlayerExample>().Play();
+        else
+        {
+            PlayerObj.GetComponent<VLCPlayerExample>().Play();
+        }
+        RepeatCheck().Forget();
+    }
+    
+    private async UniTaskVoid RepeatCheck()
+    {
+        await UniTask.DelayFrame(2);
+        var vlc = PlayerObj.GetComponent<VLCPlayerExample>();
+        if (!vlc.IsPlaying)
+        {
+            vlc.Play();
+        }
     }
 
     private void UnShow()

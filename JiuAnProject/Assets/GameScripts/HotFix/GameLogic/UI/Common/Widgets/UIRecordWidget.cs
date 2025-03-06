@@ -91,7 +91,9 @@ namespace GameLogic
         }
         else
         {
-          query.beginTime = "1970-01-01";
+          // query.beginTime = "1970-01-01";
+          // 转换成 "yyyy-MM-dd" 格式的字符串
+          query.beginTime = DateTime.Today.ToString("yyyy-MM-dd");
         }
         if (m_textEndTime.text.Length > 2)
         {
@@ -112,7 +114,8 @@ namespace GameLogic
           query.name = m_inputName.text;
         }
         query.candidate = UIGlobalDataInstance.Instance.GroupDict[m_dpGroup.options[m_dpGroup.value].text];
-        query.sort = 1; //默认按编号升序
+        query.sort = 2; //默认按编号升序
+        Log.Info(query);
         string json = JsonConvert.SerializeObject(query);
         form.AddField("DTO", json);
         //请求服务器

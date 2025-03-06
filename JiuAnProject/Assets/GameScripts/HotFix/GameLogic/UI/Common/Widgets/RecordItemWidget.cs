@@ -183,6 +183,7 @@ namespace GameLogic
 			else
 			{
 				m_textName.text = name;
+				m_textName.gameObject.SetActive(true);
 			}
 			m_textPos.text = pos;
 			m_textStatus.text = status;
@@ -225,7 +226,10 @@ namespace GameLogic
 			}
 			_builder.Append("抓拍点: ").Append(Pos).AppendLine();
 			_builder.Append("进出状态: ").Append(Status).AppendLine();
-			_builder.Append("报警置信度: ").Append(WarnScore.ToString("0.00")).AppendLine();
+			if (warnScore > 0)
+			{
+				_builder.Append("报警置信度: ").Append(WarnScore.ToString("0.00")).AppendLine();
+			}
 			return _builder.ToString();
 		}
 

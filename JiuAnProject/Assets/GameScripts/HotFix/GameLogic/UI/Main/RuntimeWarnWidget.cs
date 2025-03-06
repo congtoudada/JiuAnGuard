@@ -111,7 +111,7 @@ namespace GameLogic
 
             if (dtoList.Count > 0)
             {
-                UISimpleTipWindow.Show("新报警: " + GetWarnStr(dtoList[^1].warnType));
+                UISimpleTipWindow.Show("新报警: " + GetWarnStr(dtoList[^1].status));
                 
                 if (!m_goNew.activeSelf)
                 {

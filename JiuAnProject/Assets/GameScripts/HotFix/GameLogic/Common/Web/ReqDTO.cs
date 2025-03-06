@@ -48,5 +48,13 @@ namespace GameLogic
     public int status; //状态 表示方向(1:进 2:出) 表示警告 (1: 打电话 2: 安全帽 3:代刷卡 4:特定区域入侵)
     public List<int> candidate; //摄像头候选id，只返回候选id的计数情况，为空表示选择全部
     public int sort; //排序 (1升序, 2降序)
+
+    public override string ToString()
+    {
+      return $"条件查询: {nameof(page)}: {page}, {nameof(limit)}: {limit}, {nameof(pageType)}: {pageType}, " +
+             $"{nameof(recordId)}: {recordId}, {nameof(beginTime)}: {beginTime}, {nameof(endTime)}: {endTime}, " +
+             $"{nameof(pos)}: {pos}, {nameof(name)}: {name}, {nameof(status)}: {status}, " +
+             $"{nameof(candidate)}: {candidate}, {nameof(sort)}: {sort}";
+    }
   }
 }

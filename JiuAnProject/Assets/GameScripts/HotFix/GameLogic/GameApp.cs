@@ -41,11 +41,16 @@ public partial class GameApp:Singleton<GameApp>
     private void StartGameLogic()
     {
         IsFramework = true;
-        GameModule.Scene.LoadScene("ZhongGuangHe",  callBack: handle =>
+        GameModule.Scene.LoadScene("ZhongWu",  callBack: handle =>
         {
-            Log.Info("加载场景ZhongGuangHe");
+            Log.Info("加载场景ZhongWu");
             GameModule.UI.ShowUI<UIMainWindow>();
         });
+        // GameModule.Scene.LoadScene("ZhongGuangHe",  callBack: handle =>
+        // {
+        //     Log.Info("加载场景ZhongGuangHe");
+        //     GameModule.UI.ShowUI<UIMainWindow>();
+        // });
     }
 
     /// <summary>

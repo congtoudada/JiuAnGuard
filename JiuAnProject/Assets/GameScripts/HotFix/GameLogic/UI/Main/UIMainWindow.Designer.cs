@@ -211,8 +211,9 @@ namespace GameLogic
 						m_goUILoadingWidget.SetActive(false);
 						if (sshOK)
 						{
+							await UniTask.Delay(10);  //延迟10s
 							// 5s重启命令等待+3s网络延迟
-							UISimpleTipWindow.Show("算法重启成功！耗时约: " + (waitCnt+8) + "秒", 5.0f);
+							UISimpleTipWindow.Show("算法重启成功！耗时约: " + (waitCnt+18) + "秒", 5.0f);
 						}
 						else
 						{

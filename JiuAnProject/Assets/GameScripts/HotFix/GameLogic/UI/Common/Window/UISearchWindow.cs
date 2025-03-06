@@ -100,15 +100,23 @@ namespace GameLogic
                 // 发送查询请求
                 form.AddField("query_id", m_inputID.text);
                 string json = await Utility.Http.Post(WebURL.GetReidURL(), form, 60); //图片路径
+                Log.Info("Search Person Response: " + json);
                 m_goUILoadingWidget.SetActive(false);
                 if (!string.IsNullOrEmpty(json))
                 {
                     Log.Info("收到reid响应" + json);
                     List<ReIDInfo> reidList = JsonConvert.DeserializeObject<List<ReIDInfo>>(json);
-                    for (int i = 0; i < reidList.Count; i++)
+                    if (reidList.Count == 0)
                     {
-                        SetText(i, $"{reidList[i].camId}.{reidList[i].pos}", reidList[i].recordTime);
-                        SetTexture(i, reidList[i].shotImg);
+                        UISimpleTipWindow.Show("未找到该用户最近抓拍图像");
+                    }
+                    else
+                    {
+                        for (int i = 0; i < reidList.Count; i++)
+                        {
+                            SetText(i, $"{reidList[i].camId}.{reidList[i].pos}", reidList[i].recordTime);
+                            SetTexture(i, reidList[i].shotImg);
+                        }
                     }
                 }
                 else

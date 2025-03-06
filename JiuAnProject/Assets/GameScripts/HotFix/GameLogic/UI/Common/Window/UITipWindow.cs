@@ -1,11 +1,14 @@
 using System;
 using Cysharp.Threading.Tasks;
+using DG.Tweening.Plugins.Core.PathCore;
 using UnityEngine;
 using UnityEngine.UI;
 using TEngine;
 using TMPro;
 using UnityEngine.Events;
 using UnityEngine.Networking;
+using UnityEngine.Windows;
+using File = System.IO.File;
 using Object = UnityEngine.Object;
 
 namespace GameLogic
@@ -82,7 +85,7 @@ namespace GameLogic
             m_textTitle.text = data.title;
             m_textMain.text = data.main_text;
             m_textSub.text = data.sub_text;
-            if (!string.IsNullOrEmpty(data.img_url))
+            if (!string.IsNullOrEmpty(data.img_url) && File.Exists(data.img_url))
             {
                 m_rimgMain.enabled = true;
                 var aspectRatioFitter = m_rimgMain.gameObject.GetComponent<AspectRatioFitter>();
