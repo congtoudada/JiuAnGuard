@@ -39,6 +39,11 @@ namespace GameLogic
         [Header("配置项索引 (0为测试路径)"), Tooltip("如果存在配置文件，会解析")] 
         public int configIdx = 0;
 
+        // private static Material lineMat = null;
+        // private static Color lineColor = Color.yellow;
+        // private GameObject lineGroup = null;
+        // private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
+
         private void Awake()
         {
             CONFIG_FILENAME = SceneManager.GetActiveScene().name + ".json";
@@ -77,12 +82,6 @@ namespace GameLogic
             {
                 var parent = transform.parent;
                 configIdx = parent.GetSiblingIndex() + 1;  //获取实际下标
-// #if !UNITY_EDITOR
-//                 configIdx = transform.parent.GetSiblingIndex() + 1;
-// #else
-//                 configIdx = 0;
-//                 // Debug.Log($"{transform.parent.name} SiblingIndex + 1: {transform.parent.GetSiblingIndex() + 1}");
-// #endif
                 VLCPlayerExample vlc = GetComponent<VLCPlayerExample>();
                 VLCPlayerExample vlcPreview = parent.Find("Billboard/Billboard_VPlayer").GetComponent<VLCPlayerExample>();
                 if (vlc)
@@ -124,7 +123,10 @@ namespace GameLogic
             _renderer = GetComponent<MeshRenderer>();
             _projector = GetComponent<ProjectorURP>();
             _wander = GameObject.FindWithTag("LevelManager").GetComponent<Wander>();
-            // _wander = GameModule.Base.gameObject.GetOrAddComponent<Wander>();
+            // if (transform.childCount > 0)
+            // {
+            //     lineGroup = transform.GetChild(0).gameObject;
+            // }
             Hide();
         }
         
@@ -132,6 +134,7 @@ namespace GameLogic
         public void Show()
         {
             _vlcPlayer.Open();
+            // lineGroup?.SetActive(true);
             _renderer.enabled = true;
         }
         
@@ -139,6 +142,7 @@ namespace GameLogic
         public void Hide()
         {
             _vlcPlayer.Stop();
+            // lineGroup?.SetActive(false);
             _renderer.enabled = false;
         }
 
@@ -153,26 +157,40 @@ namespace GameLogic
         
         private IEnumerator CheckHideEnumerator()
         {
-            while (_wander.bScript.subMgr == this)
+            while (_wander.bScript != null && _wander.bScript.subMgr == this)
             {
+                // if (lineMat == null)
+                // {
+                //     lineMat = GameModule.Resource.LoadAsset<Material>("LineMat");
+                //     lineColor = lineMat.GetColor(BaseColor);
+                // }
                 float sqrLength = Vector3.SqrMagnitude(transform.position - Camera.main.transform.position);
-                float k = 1 - sqrLength / (visibleRange * visibleRange);
+                float k = 1 - sqrLength / (visibleRange * visibleRange); //越近越大，越远越小
+                k = Mathf.Clamp01(k);
+                // Debug.Log("k: " + k);
                 float lenLerp = Mathf.SmoothStep(0f, 1f, k);
                 if (lenLerp > visibleThresh) lenLerp = 1.0f;
                 _projector.alpha = Mathf.Clamp01(lenLerp);
-                // Debug.Log(lenLerp);
-                // if (sqrLength > visibleRange * visibleRange * 0.5)
-                // {
-                //     float lenLerp = Mathf.Lerp(0.75f, 0, sqrLength / visibleRange * visibleRange);
-                //     _projector.alpha = lenLerp;
-                // }
-                // else
-                // {
-                //     _projector.alpha = 1.0f;
-                // }
+                
+                // float lineAlpha = Mathf.Lerp(1.0f, 0.2f, k);
+                // Color nowCol = lineColor;
+                // nowCol.a = lineAlpha;
+                // lineMat.SetColor(BaseColor, nowCol);
+                
                 yield return null;
             }
             Hide();
         }
+
+        // private void OnDestroy()
+        // {
+        //     if (lineMat != null)
+        //     {
+        //         Color col = lineColor;
+        //         col.a = 0.8f;
+        //         lineMat.SetColor(BaseColor, col);
+        //         lineMat = null;
+        //     }
+        // }
     }
 }

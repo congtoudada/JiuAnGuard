@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Cysharp.Threading.Tasks;
+using GameMain;
 using Sirenix.OdinInspector;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 
@@ -59,8 +61,10 @@ namespace GameLogic
         [Range(-2, 2)]
         [Tooltip("X最大hide值，视口X大于该值会隐藏投影")] 
         public float hideXMax = 1;
-
+        
         [ReadOnly] public float curViewportX = 0;
+        [Tooltip("描边可视化H修正值")] 
+        public float correctH = 0.17f;
         
         private Camera mainCamera = null;
         private Camera camera;
@@ -90,6 +94,15 @@ namespace GameLogic
         private static readonly int UVLerp = Shader.PropertyToID("_UVLerp");
         private static readonly int OffsetX = Shader.PropertyToID("_OffsetX");
         private static readonly int OffsetY = Shader.PropertyToID("_OffsetY");
+
+        // private void Start()
+        // {
+        //     //相机辅助线
+        //     if (transform.childCount > 0)
+        //     {
+        //         transform.GetChild(0).gameObject.SetActive(false);
+        //     }
+        // }
 
         private void OnEnable()
         {
@@ -184,18 +197,21 @@ namespace GameLogic
             float halfWidth_Near = halfHeight_Near * m_aspect;
             float halfHeight_Far = camera.farClipPlane * Mathf.Tan(halfFOV);
             float halfWidth_Far = halfHeight_Far * m_aspect;
-            
+
+            float epsilon = 0f;
+            var nearClipPlane = camera.nearClipPlane;
+            var farClipPlane = camera.farClipPlane;
             Vector3[] VBO = {
                 //近平面
-                new Vector3(-halfWidth_Near, -halfHeight_Near, camera.nearClipPlane + 0.01f), //左下角 0
-                new Vector3(-halfWidth_Near, halfHeight_Near, camera.nearClipPlane + 0.01f), //左上角 1
-                new Vector3(halfWidth_Near, halfHeight_Near, camera.nearClipPlane + 0.01f), //右上角 2
-                new Vector3(halfWidth_Near, -halfHeight_Near, camera.nearClipPlane + 0.01f), //右下角 3
+                new (-halfWidth_Near, -halfHeight_Near, nearClipPlane + epsilon), //左下角 0
+                new (-halfWidth_Near, halfHeight_Near, nearClipPlane + epsilon), //左上角 1
+                new (halfWidth_Near, halfHeight_Near, nearClipPlane + epsilon), //右上角 2
+                new (halfWidth_Near, -halfHeight_Near, nearClipPlane + epsilon), //右下角 3
                 //远平面
-                new Vector3(-halfWidth_Far, -halfHeight_Far, camera.farClipPlane), //左下角 4
-                new Vector3(-halfWidth_Far, halfHeight_Far, camera.farClipPlane), //左上角 5 
-                new Vector3(halfWidth_Far, halfHeight_Far, camera.farClipPlane), //右上角 6
-                new Vector3(halfWidth_Far, -halfHeight_Far, camera.farClipPlane), //右下角 7
+                new (-halfWidth_Far, -halfHeight_Far, farClipPlane), //左下角 4
+                new (-halfWidth_Far, halfHeight_Far, farClipPlane), //左上角 5 
+                new (halfWidth_Far, halfHeight_Far, farClipPlane), //右上角 6
+                new (halfWidth_Far, -halfHeight_Far, farClipPlane), //右下角 7
             };
             
             int[] EBO = {
@@ -222,6 +238,76 @@ namespace GameLogic
             if (meshFilter.sharedMesh != null) meshFilter.sharedMesh.Clear();
             meshFilter.sharedMesh = mesh;
             Debug.Log("生成Mesh成功!");
+
+            if (transform.childCount > 0)
+            {
+                DestroyImmediate(transform.GetChild(0).gameObject);
+            }
+            GameObject outlineGroup = new GameObject("OutlineGroup");
+            outlineGroup.transform.parent = transform;
+            outlineGroup.transform.localPosition = Vector3.zero;
+            outlineGroup.transform.localRotation = Quaternion.identity;
+            outlineGroup.transform.localScale = Vector3.one;
+            var lineTemplate = Resources.Load<GameObject>("OutlineLine");
+            Transform outlineTrans = outlineGroup.transform;
+            LineScript line;
+            // for (int i = 0; i < VBO.Length / 2; i++)
+            // {
+            //     line = Instantiate(lineTemplate, outlineTrans.position, outlineTrans.rotation, outlineTrans)
+            //            .GetComponent<LineScript>();
+            //     line.SetLine(VBO[i], VBO[i+4]);
+            // }
+            float minorNearH = halfHeight_Near * 2 * correctH;
+            float minorFarH = halfHeight_Far * 2 * correctH;
+            // float minorNearH = 0;
+            // float minorFarH = 0;
+            Vector3[] VBOEx =
+            {
+                // 近远平面
+                //近上
+                new (-halfWidth_Near, -halfHeight_Near, nearClipPlane + epsilon),
+                //近右
+                new (halfWidth_Near, -halfHeight_Near, nearClipPlane + epsilon),
+                //近下
+                new (halfWidth_Near, halfHeight_Near - minorNearH, nearClipPlane + epsilon),
+                //近左
+                new (-halfWidth_Near, halfHeight_Near - minorNearH, nearClipPlane + epsilon),
+                //远上
+                new (-halfWidth_Far, -halfHeight_Far, farClipPlane),
+                //远右
+                new (halfWidth_Far, -halfHeight_Far, farClipPlane),
+                //远下
+                new (halfWidth_Far, halfHeight_Far - minorFarH, farClipPlane),
+                //远左
+                new (-halfWidth_Far, halfHeight_Far - minorFarH, farClipPlane),
+                //视椎体边长
+                //近平面
+                new (-halfWidth_Near, -halfHeight_Near, nearClipPlane + epsilon), //左下角 0
+                new (-halfWidth_Near, halfHeight_Near - minorNearH, nearClipPlane + epsilon), //左上角 1
+                new (halfWidth_Near, halfHeight_Near - minorNearH, nearClipPlane + epsilon), //右上角 2
+                new (halfWidth_Near, -halfHeight_Near, nearClipPlane + epsilon), //右下角 3
+                // ------------------------------------------------------------
+                new (halfWidth_Near, -halfHeight_Near, nearClipPlane + epsilon),
+                new (halfWidth_Near, halfHeight_Near - minorNearH, nearClipPlane + epsilon),
+                new (-halfWidth_Near, halfHeight_Near - minorNearH, nearClipPlane + epsilon),
+                new (-halfWidth_Near, -halfHeight_Near, nearClipPlane + epsilon),
+                new (halfWidth_Far, -halfHeight_Far, farClipPlane),
+                new (halfWidth_Far, halfHeight_Far - minorFarH, farClipPlane),
+                new (-halfWidth_Far, halfHeight_Far - minorFarH, farClipPlane),
+                new (-halfWidth_Far, -halfHeight_Far, farClipPlane),
+                new (-halfWidth_Far, -halfHeight_Far, farClipPlane), //左下角 4
+                new (-halfWidth_Far, halfHeight_Far - minorFarH, farClipPlane), //左上角 5 
+                new (halfWidth_Far, halfHeight_Far - minorFarH, farClipPlane), //右上角 6
+                new (halfWidth_Far, -halfHeight_Far, farClipPlane), //右下角 7
+            };
+            int halfLen = VBOEx.Length / 2;
+            for (int i = 0; i < halfLen; i++)
+            {
+                line = Instantiate(lineTemplate, outlineTrans.position, outlineTrans.rotation, outlineTrans)
+                    .GetComponent<LineScript>();
+                line.SetLine(VBOEx[i], VBOEx[i+halfLen]);
+            }
+            
         }
 
         private bool AllocateRTIfNeeded()

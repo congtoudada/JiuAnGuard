@@ -84,6 +84,8 @@ namespace GameLogic
 			}
 			Camera.main.transform.DOMove(startPoint.transform.position, 1f);
 			Camera.main.transform.DORotate(startPoint.transform.rotation.eulerAngles, 1f);
+			var levelMgr = GameObject.FindWithTag("LevelManager");
+			if (levelMgr != null) levelMgr.GetComponent<Wander>().bScript = null;
 		}
 		private async UniTaskVoid OnClickCamIsOnBtn()
 		{
