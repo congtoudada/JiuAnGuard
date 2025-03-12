@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
@@ -15,6 +16,7 @@ using TEngine;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Application = UnityEngine.Device.Application;
 
 namespace GameLogic
 {
@@ -23,6 +25,7 @@ namespace GameLogic
       private RecordItemWidgetMgr _recordMgr;
       private int page = 1; //当前页数
       private bool isRequest = false;
+      private const string EXPORT_DIR = "outputs";
 
       protected virtual PageType pageType { get; } = PageType.Count;
       
@@ -52,7 +55,14 @@ namespace GameLogic
         m_dpGroup.AddOptions(groupList);
         m_dpGroup.value = groupList.FindIndex(key => key == UIGlobalDataInstance.Instance.CurrentGroupID);
         
-        OnClickResetBtn().Forget();
+        // OnClickResetBtn().Forget();
+        m_inputKey.text = "";
+        m_textBeginTime.text = "";
+        m_textEndTime.text = "";
+        m_dpPos.value = 0;
+        m_dpGroup.value = m_dpGroup.options.FindIndex(data => data.text == UIGlobalDataInstance.Instance.CurrentGroupID);
+        m_dpStatus.value = 0;
+        m_inputName.text = "";
       }
 
       protected override void OnSetVisible(bool visible)
@@ -70,9 +80,10 @@ namespace GameLogic
         Post(page).Forget();
       }
 
-      private async UniTask<bool> Post(int reqPage)
+      private async UniTask<bool> Post(int reqPage, bool bIsExport=false)
       {
-        if (isRequest) return false;
+        if (isRequest)
+          return false;
         //准备请求体
         isRequest = true;
         Log.Info("发送异步CountList请求");
@@ -91,9 +102,9 @@ namespace GameLogic
         }
         else
         {
-          // query.beginTime = "1970-01-01";
+          query.beginTime = "1970-01-01";
           // 转换成 "yyyy-MM-dd" 格式的字符串
-          query.beginTime = DateTime.Today.ToString("yyyy-MM-dd");
+          // query.beginTime = DateTime.Today.ToString("yyyy-MM-dd");
         }
         if (m_textEndTime.text.Length > 2)
         {
@@ -115,29 +126,48 @@ namespace GameLogic
         }
         query.candidate = UIGlobalDataInstance.Instance.GroupDict[m_dpGroup.options[m_dpGroup.value].text];
         query.sort = 2; //默认按编号升序
+        if (bIsExport)
+        {
+          query.directory = Path.Combine(Application.streamingAssetsPath, EXPORT_DIR)
+            .Replace("\\", "/");
+        }
         Log.Info(query);
         string json = JsonConvert.SerializeObject(query);
         form.AddField("DTO", json);
         //请求服务器
-        string rsp = await Utility.Http.Post(WebURL.GetFullURL("record"), form);
-        isRequest = false;
-        if (string.IsNullOrEmpty(rsp))
+        if (bIsExport)
         {
-          UISimpleTipWindow.Show("没有收到服务器响应！");
-          return false;
+          string rsp = await Utility.Http.Post(WebURL.GetFullURL("export"), form);
+          isRequest = false;
+          if (string.IsNullOrEmpty(rsp))
+          {
+            UISimpleTipWindow.Show("导出失败，没有收到服务器响应！");
+            return false;
+          }
+          UISimpleTipWindow.Show("导出成功！文件名: " + Path.GetFileName(rsp), 3.0f);
         }
-        //获取响应
-        RspRecordDTO resultDTO = JsonConvert.DeserializeObject<RspRecordDTO>(rsp);
-        page = resultDTO.page;
-        _recordMgr.Clear(); //清空旧数据和选中信息
-        for (int i = 0; i < resultDTO.list.Count; i++)
+        else
         {
-          var item = resultDTO.list[i];
-          _recordMgr.SetRecordItem(item.recordId, item.recordTime, item.name, 
-            item.pos, GetStatusStr(item.status), item.shotImg, item.warnScore,
-            GetRenderType(item));
+          string rsp = await Utility.Http.Post(WebURL.GetFullURL("record"), form);
+          isRequest = false;
+          if (string.IsNullOrEmpty(rsp))
+          {
+            UISimpleTipWindow.Show("没有收到服务器响应！");
+            return false;
+          }
+          //获取响应
+          RspRecordDTO resultDTO = JsonConvert.DeserializeObject<RspRecordDTO>(rsp);
+          page = resultDTO.page;
+          _recordMgr.Clear(); //清空旧数据和选中信息
+          for (int i = 0; i < resultDTO.list.Count; i++)
+          {
+            var item = resultDTO.list[i];
+            _recordMgr.SetRecordItem(item.recordId, item.recordTime, item.name, 
+              item.pos, GetStatusStr(item.status), item.shotImg, item.warnScore,
+              GetRenderType(item));
+          }
+          _recordMgr.RefreshPageWidget(resultDTO.totalCount, resultDTO.page);
         }
-        _recordMgr.RefreshPageWidget(resultDTO.totalCount, resultDTO.page);
         return true;
       }
 

@@ -95,14 +95,14 @@ namespace GameLogic
         private static readonly int OffsetX = Shader.PropertyToID("_OffsetX");
         private static readonly int OffsetY = Shader.PropertyToID("_OffsetY");
 
-        // private void Start()
-        // {
-        //     //相机辅助线
-        //     if (transform.childCount > 0)
-        //     {
-        //         transform.GetChild(0).gameObject.SetActive(false);
-        //     }
-        // }
+        private void Start()
+        {
+            //关闭相机辅助线
+            if (transform.childCount > 0)
+            {
+                transform.GetChild(0).gameObject.SetActive(false);
+            }
+        }
 
         private void OnEnable()
         {
@@ -251,12 +251,6 @@ namespace GameLogic
             var lineTemplate = Resources.Load<GameObject>("OutlineLine");
             Transform outlineTrans = outlineGroup.transform;
             LineScript line;
-            // for (int i = 0; i < VBO.Length / 2; i++)
-            // {
-            //     line = Instantiate(lineTemplate, outlineTrans.position, outlineTrans.rotation, outlineTrans)
-            //            .GetComponent<LineScript>();
-            //     line.SetLine(VBO[i], VBO[i+4]);
-            // }
             float minorNearH = halfHeight_Near * 2 * correctH;
             float minorFarH = halfHeight_Far * 2 * correctH;
             // float minorNearH = 0;
@@ -307,7 +301,6 @@ namespace GameLogic
                     .GetComponent<LineScript>();
                 line.SetLine(VBOEx[i], VBOEx[i+halfLen]);
             }
-            
         }
 
         private bool AllocateRTIfNeeded()

@@ -170,7 +170,7 @@ namespace GameLogic
 		{
 			if (!m_goUILoadingWidget.activeSelf)
 			{
-				UITipWindow.Show("重启算法", main_text:"重启算法可能需要等待一小段时间(<10min)，请不要中途断开。您确定要重启吗？",
+				UITipWindow.Show("重启算法", main_text:"重启算法可能需要等待一小段时间(<5min)，请不要中途断开。您确定要重启吗？",
 					confirmCallback: async () =>
 					{
 						m_goUILoadingWidget.SetActive(true);

@@ -7,11 +7,15 @@
 *****************************************************/
 
 using System;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using Cysharp.Threading.Tasks;
 using TEngine;
 using TMPro;
+using UnityEngine.Device;
 using UnityEngine.UI;
+using Debug = UnityEngine.Debug;
 
 namespace GameLogic
 {
@@ -48,17 +52,47 @@ namespace GameLogic
         #endregion
 
         #region 事件
+        //导出功能
         private async UniTaskVoid OnClickResetBtn()
         {
-            m_inputKey.text = "";
-            m_textBeginTime.text = "";
-            m_textEndTime.text = "";
-            m_dpPos.value = 0;
-            m_dpGroup.value = m_dpGroup.options.FindIndex(data => data.text == UIGlobalDataInstance.Instance.CurrentGroupID);
-            m_dpStatus.value = 0;
-            m_inputName.text = "";
+            // m_inputKey.text = "";
+            // m_textBeginTime.text = "";
+            // m_textEndTime.text = "";
+            // m_dpPos.value = 0;
+            // m_dpGroup.value = m_dpGroup.options.FindIndex(data => data.text == UIGlobalDataInstance.Instance.CurrentGroupID);
+            // m_dpStatus.value = 0;
+            // m_inputName.text = "";
+            string folderPath = Path.Join(Application.streamingAssetsPath, EXPORT_DIR)
+                .Replace("\\", "/");
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+            UITipWindow.Show("导出记录", main_text: "导出目录: " + folderPath + "\n是否确认导出？", confirmCallback:
+                async () =>
+                {
+                    bool ret = await Post(1, true); //搜索只搜索首页
+                    if (ret)
+                    {
+                        //打开目录
+                        Process.Start("explorer.exe", folderPath);
+                    }
+                });
         }
         private async UniTaskVoid OnClickSearchBtn()
+        {
+            //合法性校验
+            if (CheckIsValid())
+            {
+                bool ret = await Post(1); //搜索只搜索首页
+                if (ret)
+                {
+                    UISimpleTipWindow.Show("搜索成功");
+                }
+            }
+        }
+
+        private bool CheckIsValid()
         {
             //合法性校验
             if (m_textBeginTime.text.Length > 5 && m_textEndTime.text.Length > 5)
@@ -70,12 +104,10 @@ namespace GameLogic
                 if (date2 < date1)
                 {
                     UISimpleTipWindow.Show("不合法的日期范围");
-                    return;
+                    return false;
                 }
             }
-            bool ret = await Post(1); //搜索只搜索首页
-            if (ret)
-                UISimpleTipWindow.Show("搜索成功");
+            return true;
         }
         #endregion
     }
