@@ -49,33 +49,23 @@ namespace GameLogic
         private GameObject m_goUILoadingWidget;
         protected override void ScriptGenerator()
         {
-            m_textTitle = FindChildComponent<TextMeshProUGUI>("Tip/m_textTitle");
-            m_inputID = FindChildComponent<TMP_InputField>("Tip/m_inputID");
-            m_btnBack = FindChildComponent<Button>("Tip/m_btnBack");
-            m_rimgMain = FindChildComponent<RawImage>("Tip/Center/MainInfo/m_rimgMain");
-            m_textSub = FindChildComponent<TextMeshProUGUI>("Tip/Center/MainInfo/m_rimgMain/m_textSub");
-            m_rimgMain1 = FindChildComponent<RawImage>("Tip/Center/MainInfo/m_rimgMain1");
-            m_textSub1 = FindChildComponent<TextMeshProUGUI>("Tip/Center/MainInfo/m_rimgMain1/m_textSub1");
-            m_rimgMain2 = FindChildComponent<RawImage>("Tip/Center/MainInfo/m_rimgMain2");
-            m_textSub2 = FindChildComponent<TextMeshProUGUI>("Tip/Center/MainInfo/m_rimgMain2/m_textSub2");
-            m_rimgMain3 = FindChildComponent<RawImage>("Tip/Center/MainInfo/m_rimgMain3");
-            m_textSub3 = FindChildComponent<TextMeshProUGUI>("Tip/Center/MainInfo/m_rimgMain3/m_textSub3");
-            m_btnConfirm = FindChildComponent<Button>("Tip/m_btnConfirm");
-            m_btnCancel = FindChildComponent<Button>("Tip/m_btnCancel");
-            m_goUILoadingWidget = FindChild("m_goUILoadingWidget").gameObject;
-            m_btnBack.onClick.AddListener(UniTask.UnityAction(OnClickBackBtn));
-            m_btnConfirm.onClick.AddListener(UniTask.UnityAction(OnClickConfirmBtn));
-            m_btnCancel.onClick.AddListener(UniTask.UnityAction(OnClickCancelBtn));
-            
-            m_textArray.Add(m_textSub);
-            m_textArray.Add(m_textSub1);
-            m_textArray.Add(m_textSub2);
-            m_textArray.Add(m_textSub3);
-            
-            m_rimgArray.Add(m_rimgMain);
-            m_rimgArray.Add(m_rimgMain1);
-            m_rimgArray.Add(m_rimgMain2);
-            m_rimgArray.Add(m_rimgMain3);
+	        m_textTitle = FindChildComponent<TextMeshProUGUI>("Tip/m_textTitle");
+	        m_inputID = FindChildComponent<TMP_InputField>("Tip/m_inputID");
+	        m_btnBack = FindChildComponent<Button>("Tip/m_btnBack");
+	        m_rimgMain = FindChildComponent<RawImage>("Tip/Center/MainInfo/MainItem/m_rimgMain");
+	        m_textSub = FindChildComponent<TextMeshProUGUI>("Tip/Center/MainInfo/MainItem/m_textSub");
+	        m_rimgMain1 = FindChildComponent<RawImage>("Tip/Center/MainInfo/MainItem1/m_rimgMain1");
+	        m_textSub1 = FindChildComponent<TextMeshProUGUI>("Tip/Center/MainInfo/MainItem1/m_textSub1");
+	        m_rimgMain2 = FindChildComponent<RawImage>("Tip/Center/MainInfo/MainItem2/m_rimgMain2");
+	        m_textSub2 = FindChildComponent<TextMeshProUGUI>("Tip/Center/MainInfo/MainItem2/m_textSub2");
+	        m_rimgMain3 = FindChildComponent<RawImage>("Tip/Center/MainInfo/MainItem3/m_rimgMain3");
+	        m_textSub3 = FindChildComponent<TextMeshProUGUI>("Tip/Center/MainInfo/MainItem3/m_textSub3");
+	        m_btnConfirm = FindChildComponent<Button>("Tip/m_btnConfirm");
+	        m_btnCancel = FindChildComponent<Button>("Tip/m_btnCancel");
+	        m_goUILoadingWidget = FindChild("m_goUILoadingWidget").gameObject;
+	        m_btnBack.onClick.AddListener(UniTask.UnityAction(OnClickBackBtn));
+	        m_btnConfirm.onClick.AddListener(UniTask.UnityAction(OnClickConfirmBtn));
+	        m_btnCancel.onClick.AddListener(UniTask.UnityAction(OnClickCancelBtn));
         }
         #endregion
         
@@ -150,6 +140,16 @@ namespace GameLogic
                 // m_rimgArray[i].texture = null;
             }
             m_goUILoadingWidget.SetActive(false);
+            
+            m_textArray.Add(m_textSub);
+            m_textArray.Add(m_textSub1);
+            m_textArray.Add(m_textSub2);
+            m_textArray.Add(m_textSub3);
+            
+            m_rimgArray.Add(m_rimgMain);
+            m_rimgArray.Add(m_rimgMain1);
+            m_rimgArray.Add(m_rimgMain2);
+            m_rimgArray.Add(m_rimgMain3);
         }
 
         private void SetText(int idx, string camId, string timeStr)
@@ -161,9 +161,13 @@ namespace GameLogic
         private async void SetTexture(int idx, string shotImg)
         {
             if (idx < 0 || idx >= m_rimgArray.Count) return;
-            m_rimgArray[idx].texture = await Utility.Http.GetTexture(shotImg);
+            Texture texture = await Utility.Http.GetTexture(shotImg);
+            m_rimgArray[idx].texture = texture;
+            var aspectRatioFitter = m_rimgArray[idx].gameObject.GetOrAddComponent<AspectRatioFitter>();
+            float aspectRatio = (float) texture.width / texture.height;
+            aspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+            aspectRatioFitter.aspectRatio = aspectRatio;
         }
-        
     }
 }
 

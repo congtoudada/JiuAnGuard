@@ -10,7 +10,7 @@ namespace GameLogic
 {
     public static class UIConstant
     {
-        public const float WarnThreshold = 0.68f; //报警分数阈值（在该分数两侧的item会有不同的渲染方式）
+        public const float WarnThreshold = 0.80f; //报警分数阈值（在该分数两侧的item会有不同的渲染方式）
         public const int MaxWarnCount = 9999; //最多存储9999条实时报警数据
     }
 }

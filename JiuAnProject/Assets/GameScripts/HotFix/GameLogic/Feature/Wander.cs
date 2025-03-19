@@ -30,7 +30,7 @@ namespace GameLogic
         [HideInInspector]
         public BillboardScript bScript;
 
-        private bool _inputLock;
+        public bool inputLock;
         // Start is called before the first frame update
         void Start()
         {
@@ -46,7 +46,7 @@ namespace GameLogic
         // Update is called once per frame
         void Update()
         {
-            if (!_inputLock)
+            if (!inputLock)
             {
                 try
                 {
@@ -61,21 +61,20 @@ namespace GameLogic
                     }
 
                     //按下左键点击
-                    if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject())
+                    if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
                     {
                         // Transform camTrans = mainCamera.transform;
                         // 将鼠标位置转换为世界射线
                         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
                         RaycastHit hit;
-
                         // 进行射线检测
                         if (Physics.Raycast(ray, out hit))
                         {
-                            // _inputLock = true;
+                            // inputLock = true;
                             // 如果射线碰到物体，输出物体的名字
-                            // Log.Info("Clicked object: " + hit.transform.name);
                             if (hit.transform.CompareTag("Billboard"))
                             {
+                                // Log.Info("Clicked object: " + hit.transform.parent.name);
                                 ProcessBillboard(hit.transform.GetComponent<BillboardScript>());
                             }
                         }
@@ -118,7 +117,7 @@ namespace GameLogic
             mainCamera.transform.DOMove(destPos, lerpDuration).onComplete += () =>
             {
                 bScript.subMgr.LaunchCheckHide();
-                // _inputLock = false;
+                // inputLock = false;
             };
             // mainCamera.transform.DOLookAt(destPos + target.forward * mainCamera.farClipPlane, lerpDuration);
             mainCamera.transform.DORotateQuaternion(target.rotation, lerpDuration);
