@@ -104,7 +104,11 @@ namespace GameLogic
                     {
                         for (int i = 0; i < reidList.Count; i++)
                         {
-                            SetText(i, $"{reidList[i].camId}.{reidList[i].pos}", reidList[i].recordTime);
+                            string recordTime = reidList[i].recordTime;
+                            var recordTimeArr = recordTime.Split("_");
+                            recordTimeArr[1] = recordTimeArr[1].Replace("-", ":");
+                            recordTime = recordTimeArr[0] + " " + recordTimeArr[1];
+                            SetText(i, $"{reidList[i].camId}.{reidList[i].pos}", recordTime);
                             SetTexture(i, reidList[i].shotImg);
                         }
                     }

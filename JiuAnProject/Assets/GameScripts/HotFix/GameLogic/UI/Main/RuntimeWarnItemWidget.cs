@@ -39,7 +39,12 @@ namespace GameLogic
             _info = info;
             _outer = outer;
             m_textTitle.text = RuntimeWarnWidget.GetWarnStr(info.status);
-            m_textSub.text = info.recordTime;
+            string recordTime = info.recordTime;
+            var recordTimeArr = recordTime.Split("_");
+            recordTimeArr[1] = recordTimeArr[1].Replace("-", ":");
+            recordTime = recordTimeArr[0] + " " + recordTimeArr[1];
+            m_textSub.text = recordTime;
+            info.recordTime = recordTime;
             if (info.warnScore > UIConstant.WarnThreshold || info.warnScore < 0.01)
             {
                 transform.GetComponent<Image>().SetSprite("main_right_recordItem");

@@ -34,9 +34,8 @@ namespace GameLogic
         
         private string CustomDataFormatter(long timestamp)
         {
-            TimeSpan timeSpan = TimeSpan.FromSeconds(timestamp);
-            string formattedTime = timeSpan.ToString(@"hh\:mm");
-            return formattedTime;
+            DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(timestamp).LocalDateTime;
+            return dateTime.ToString("HH:mm");
         }
     }
 }

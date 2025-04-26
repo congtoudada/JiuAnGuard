@@ -162,6 +162,9 @@ namespace GameLogic
 		{
 			this.mgr = mgr;
 			Key = key;
+			var recordTimeArr = recordTime.Split("_");
+			recordTimeArr[1] = recordTimeArr[1].Replace("-", ":");
+			recordTime = recordTimeArr[0] + " " + recordTimeArr[1];
 			RecordTime = recordTime;
 			Name = name;
 			Pos = pos;

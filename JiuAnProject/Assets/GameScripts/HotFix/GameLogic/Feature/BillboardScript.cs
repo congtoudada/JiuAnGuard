@@ -114,13 +114,16 @@ public class BillboardScript : MonoBehaviour
 
     private void Show()
     {
+        if (OutlineObj == null || PlayerObj == null)
+            return;
         //选中被点击的物体
+        // ReSharper disable once Unity.NoNullPropagation
         OutlineObj.SetActive(true);
+        // ReSharper disable once Unity.NoNullPropagation
         PlayerObj.SetActive(true);
         if (_isFirst)
         {
             _isFirst = false;
-            
             PlayerObj.GetComponent<VLCPlayerExample>().Open();
         }
         else
@@ -142,6 +145,8 @@ public class BillboardScript : MonoBehaviour
 
     private void UnShow()
     {
+        if (OutlineObj == null || PlayerObj == null)
+            return;
         OutlineObj.SetActive(false);
         PlayerObj.SetActive(false);
         PlayerObj.GetComponent<VLCPlayerExample>().Stop();

@@ -86,7 +86,7 @@ namespace GameLogic
       var dto = JsonConvert.DeserializeObject<RspRuntimeCountDTO>(rsp);
       if (dto != null)
       {
-        // Log.Debug($"dto in: {dto.inCount} out: {dto.outCount}");
+        //Log.Info($"Count in: {dto.inCount} out: {dto.outCount} timestamp:{dto.timestamp}");
         bool isChanged = false;
         //凌晨清零逻辑
         if (dto.inCount == 0 && dto.outCount == 0 && (_inCount != 0 || _outCount != 0))
